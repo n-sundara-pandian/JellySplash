@@ -1,0 +1,224 @@
+fileFormatVersion: 2
+guid: dce8e804eebd8cd4bb45be086d0a6a11
+timeCreated: 1471359693
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: gems_0
+    21300002: gems_1
+    21300004: gems_2
+    21300006: gems_3
+    21300008: gems_4
+    21300010: gems_5
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 0
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 334
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: gems_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 688
+        width: 344
+        height: 344
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 171, y: -174}
+        - {x: 174, y: -173}
+        - {x: 174, y: -170}
+        - {x: 171, y: -169}
+        - {x: 169, y: -171}
+    - name: gems_1
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 688
+        width: 344
+        height: 344
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 344, y: -65}
+        - {x: 301, y: -22}
+        - {x: 300, y: -22}
+        - {x: 279, y: 0}
+        - {x: 66, y: 0}
+        - {x: 50, y: -16}
+        - {x: 49, y: -16}
+        - {x: 21, y: -44}
+        - {x: 21, y: -45}
+        - {x: 0, y: -66}
+        - {x: 0, y: -280}
+        - {x: 32, y: -312}
+        - {x: 33, y: -312}
+        - {x: 62, y: -341}
+        - {x: 66, y: -344}
+        - {x: 277, y: -344}
+        - {x: 280, y: -343}
+        - {x: 344, y: -279}
+    - name: gems_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 346
+        width: 344
+        height: 344
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 260, y: -164}
+        - {x: 236, y: -121}
+        - {x: 181, y: -22}
+        - {x: 175, y: -17}
+        - {x: 170, y: -17}
+        - {x: 165, y: -21}
+        - {x: 154, y: -40}
+        - {x: 122, y: -97}
+        - {x: 72, y: -186}
+        - {x: 34, y: -254}
+        - {x: 7, y: -302}
+        - {x: 0, y: -315}
+        - {x: 0, y: -328}
+        - {x: 4, y: -331}
+        - {x: 340, y: -331}
+        - {x: 344, y: -328}
+        - {x: 344, y: -315}
+        - {x: 330, y: -290}
+    - name: gems_3
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 344
+        width: 344
+        height: 344
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 339, y: -102}
+        - {x: 319, y: -81}
+        - {x: 272, y: -34}
+        - {x: 272, y: -33}
+        - {x: 244, y: -5}
+        - {x: 104, y: -5}
+        - {x: 7, y: -102}
+        - {x: 7, y: -241}
+        - {x: 66, y: -300}
+        - {x: 67, y: -300}
+        - {x: 104, y: -337}
+        - {x: 244, y: -337}
+        - {x: 295, y: -286}
+        - {x: 295, y: -285}
+        - {x: 339, y: -241}
+    - name: gems_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 344
+        height: 344
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 0, y: 0}
+        - {x: 0, y: -344}
+        - {x: 344, y: -344}
+        - {x: 344, y: 0}
+    - name: gems_5
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 0
+        width: 344
+        height: 344
+      alignment: 1
+      pivot: {x: 0, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 293, y: -297}
+        - {x: 307, y: -283}
+        - {x: 324, y: -259}
+        - {x: 338, y: -228}
+        - {x: 342, y: -214}
+        - {x: 344, y: -202}
+        - {x: 344, y: -142}
+        - {x: 341, y: -124}
+        - {x: 332, y: -102}
+        - {x: 322, y: -80}
+        - {x: 305, y: -56}
+        - {x: 270, y: -24}
+        - {x: 239, y: -8}
+        - {x: 209, y: 0}
+        - {x: 129, y: 0}
+        - {x: 87, y: -16}
+        - {x: 64, y: -33}
+        - {x: 34, y: -63}
+        - {x: 18, y: -87}
+        - {x: 9, y: -106}
+        - {x: 2, y: -128}
+        - {x: 0, y: -142}
+        - {x: 0, y: -199}
+        - {x: 3, y: -214}
+        - {x: 8, y: -234}
+        - {x: 24, y: -268}
+        - {x: 51, y: -298}
+        - {x: 70, y: -314}
+        - {x: 97, y: -330}
+        - {x: 114, y: -337}
+        - {x: 143, y: -344}
+        - {x: 200, y: -344}
+        - {x: 230, y: -337}
+        - {x: 247, y: -331}
+        - {x: 274, y: -314}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
