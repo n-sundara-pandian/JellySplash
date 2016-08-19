@@ -5,8 +5,9 @@ using System.Collections.Generic;
 public class ChainMatchController : MonoBehaviour {
 
     public LayerMask LayerMask = UnityEngine.Physics.DefaultRaycastLayers;
-    HashSet<BlockBehaviour> chain = new HashSet<BlockBehaviour>();
+    List<BlockBehaviour> chainList = new List<BlockBehaviour>();
     BlockBehaviour lastBlock = null;
+    public LevelLayout levelManager;
 
     // This stores the finger that's currently dragging this GameObject
     private Lean.LeanFinger draggingFinger;
@@ -65,10 +66,20 @@ public class ChainMatchController : MonoBehaviour {
             return;
         if (lastBlock == null || lastBlock.IsValidNeighbour(block))
         {
-            if(chain.Add(block))
+            if (chainList.Find(x => x.info.Id == block.info.Id))
             {
+                if (block.info.Id == chainList[chainList.Count - 2].info.Id)
+                {
+                    lastBlock.SelectBlock(false);
+                    chainList.Remove(lastBlock);
+                    lastBlock = chainList[chainList.Count - 1];
+                }
+            }
+            else
+            {
+                chainList.Add(block);
                 lastBlock = block;
-                Debug.Log(" BlockAdded " + chain.Count);
+                block.SelectBlock(true);
             }
         }
 
@@ -76,7 +87,9 @@ public class ChainMatchController : MonoBehaviour {
 
     public void OnFingerDown(Lean.LeanFinger finger)
     {
-        chain.Clear();
+        if (levelManager.hsm.GetCurrentState() != LevelLayout.State.Idle)
+            return;
+        chainList.Clear();
         var ray = finger.GetRay();
         var hit = default(RaycastHit);
         // Was this finger pressed down on a collider?
@@ -102,6 +115,18 @@ public class ChainMatchController : MonoBehaviour {
             lastBlock = null;
         }
         lastBlock = null;
-        chain.Clear();
+        foreach (BlockBehaviour block in chainList)
+        {
+            block.SelectBlock(false);
+        }
+        if (chainList.Count >= 3)
+            levelManager.hsm.Go(LevelLayout.State.Valid_match);
+        else
+            levelManager.hsm.Go(LevelLayout.State.Invalid_Match);
+    }
+
+    public List<BlockBehaviour> GetMatchedChain()
+    {
+        return chainList;
     }
 }

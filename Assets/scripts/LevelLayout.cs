@@ -1,74 +1,224 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using EZObjectPools;
 public class LevelLayout : MonoBehaviour {
+
+    public enum State
+    {
+        Idle,
+        Valid_match,
+        Invalid_Match,
+        Remove_Items,
+        Fill_Items,
+        Validate_Board,
+        Shuffle_Board,
+    };
+    public class LevelItem
+    {
+        public int value;
+        //public int targetIndex;
+        public LevelItem(int val)
+        {
+            value = val;
+            //targetIndex = target;
+        }
+    }
 
     public int width = 1;
     public int height = 1;
     public Transform TopLeft;
     public Transform BottomRight;
-
-    Vector3 StartPoint;
-    Vector2 GridSize;
-
-    int min_img_size = 32;
-    int max_img_size = 256;
-    float mid_x;
-
-    int suggested_img_size;
-
-    public EZObjectPool blockPool;
     public GameObject block;
-	// Use this for initialization
-	void Start () {
+    public List<int> levelData = new List<int>();
+    public List<BlockBehaviour> blocksData = new List<BlockBehaviour>();
+    private Vector3 StartOffset;
+    private EZObjectPool blockPool;
+    public ChainMatchController chainMatchController;
+
+    public HSM hsm;
+
+    // Use this for initialization
+    void Start () {
         blockPool = EZObjectPool.CreateObjectPool(block.gameObject, "Blocks", width * height * 2, true, true, false);
+        InitStateTransition();
         DetermineGrid();
+    }
+
+    void InitStateTransition()
+    {
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.Valid_match), ToValidMatch);
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.Invalid_Match), ToInvalid);
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Invalid_Match, State.Idle), ToIdle);
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Valid_match, State.Remove_Items), ToRemoveItems);
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Remove_Items, State.Fill_Items), ToFillItems);
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Fill_Items, State.Validate_Board), ToValidateBoard);
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Validate_Board, State.Shuffle_Board), ToShuffleBoard);
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Shuffle_Board, State.Validate_Board), ToValidateBoard);
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Validate_Board, State.Idle), ToIdle);
     }
 
     public void DetermineGrid()
     {
+        int min_img_size = 32;
+        int max_img_size = 256;
         blockPool.DeActivatePool();
+        levelData.Clear();
+        blocksData.Clear();
+        Utils.width = width;
+        Utils.height = height;
         float totalAvailableWidth = Mathf.Abs(TopLeft.position.x - BottomRight.position.x);
         float totalAvailableHeight = Mathf.Abs(TopLeft.position.y - BottomRight.position.y);
-        mid_x = (TopLeft.position.x + totalAvailableWidth) / 2.0f;
-        suggested_img_size = min_img_size;
+        float mid_x = (TopLeft.position.x + totalAvailableWidth) / 2.0f;
+        int suggested_img_size = min_img_size;
         for (int i = min_img_size; i < max_img_size; i++)
         {
             suggested_img_size = i;
             if (i * width > totalAvailableWidth || i * height > totalAvailableHeight)
                 break;
         }
-        StartPoint = TopLeft.position;
-        Debug.Log(suggested_img_size);
+        StartOffset = TopLeft.position;
         GameObject go;
         float half_size = suggested_img_size / 2;
-        for (int y = 0; y < height; y++)
+        for (int row = 0; row < height; row++)
         {
-            for (int x = 0; x < width; x++)
+            for (int col = 0; col < width; col++)
             {
-                if(blockPool.TryGetNextObject(StartPoint + new Vector3(x * suggested_img_size + half_size, -y * suggested_img_size - half_size, 1), Quaternion.identity, out go))
+                if(blockPool.TryGetNextObject(StartOffset + new Vector3(col * suggested_img_size + half_size, -row * suggested_img_size - half_size + 1000, 1), Quaternion.identity, out go))
                 {
                     BlockBehaviour blk = go.GetComponent<BlockBehaviour>();
                     BlockBehaviour.BlockInfo info;
-                    info.GemType = Random.Range(1, 6);
-                    info.x = x;
-                    info.y = y;
-                    blk.SetSize(suggested_img_size, info);
+                    info.GemType = Utils.GetValidGem();
+                    info.col = col;
+                    info.row = row;
+                    info.Id = Utils.GetID(row, col);//row * width + col;
+                    info.Size = suggested_img_size;
+                    blk.SetupBlock(StartOffset, info);
+                    levelData.Add(info.GemType);
+                    blocksData.Add(blk);
+                }
+            }
+        }
+    }
+    public void ToIdle()
+    {
+        Debug.Log("ToIdle Called");
+    }
+    public void ToValidMatch()
+    {
+        hsm.Go(State.Remove_Items);
+    }
+    public void ToInvalid()
+    {
+        hsm.Go(State.Idle);
+    }
+    public void ToRemoveItems()
+    {
+        List<BlockBehaviour> chainList = chainMatchController.GetMatchedChain();
+        foreach (BlockBehaviour blk in chainList)
+        {
+            levelData[blk.info.Id]= 0;
+            blocksData[blk.info.Id].SetGem(0);
+            blk.HideItem();
+        }
+        foreach (BlockBehaviour blk in chainList)
+        {
+            int id = blk.info.Id;
+            bool hasMoved = false;
+            int above_blocks_count = 0;
+            for (int i = id; i >= 0; i -= Utils.width)
+            {
+                above_blocks_count++;
+                if (levelData[i] != 0)
+                {
+                    hasMoved = true;
+                    blocksData[i].SetMoveDown(1);
+                   // blk.SetMoveDown(1);
+                }
+            }
+            if (!hasMoved)
+            {
+                for (int i = 0; i < above_blocks_count; i++)
+                {
+                  //  blk.info.row = i + 1;
+                 //   blk.SetMoveDown(i + 1);
+                }
+
+            }
+        }
+        StartCoroutine(MoveDown(chainList, 0.25f));
+    }
+
+    IEnumerator MoveDown(List<BlockBehaviour> chainList, float delayTime)
+    {
+
+        Shrink();
+
+        foreach (BlockBehaviour blk in blocksData)
+        {
+            blk.MoveDown();
+        }
+        yield return new WaitForSeconds(delayTime);
+        for (int i = blocksData.Count - 1; i >= 0; --i)
+        {
+            blocksData[i].SetGem(levelData[i]);
+            blocksData[i].UpdatePosition();
+        }
+        hsm.Go(State.Fill_Items);
+    }
+    public void Shrink()
+    {
+        for (int i = width - 1; i >= 0; --i)
+        //for (int i = 0; i < width; i++)
+        {
+            int ktop = height - 1;
+            for (int j = ktop; j >= 0; --j)
+            {
+                if (levelData[Utils.GetID(j, i)] == 0)
+                {
+                    for (int k = j - 1; k >= 0; --k)
+                    {
+                        if (levelData[Utils.GetID(k, i)] != 0)
+                        {
+                            levelData[Utils.GetID(j, i)] = levelData[Utils.GetID(k, i)];
+                            levelData[Utils.GetID(k, i)] = 0;
+                            ktop = j;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    ktop = j;
                 }
             }
         }
     }
 
-    // Update is called once per frame
-    void Update () {
-	
-	}
-
-    public void CreateLevel()
+    public void ToFillItems()
     {
-        if (width <= 0)
-            return;
-        if (height <= 0)
-            return;
+        List<BlockBehaviour> emptyChainList = new List<BlockBehaviour>();
+        for (int i = 0; i < blocksData.Count; i++)
+        {
+            if (levelData[i] == 0)
+            {
+                emptyChainList.Add(blocksData[i]);
+                blocksData[i].UpdatePosition(-10);
+                levelData[i] = Utils.GetValidGem();
+                blocksData[i].SetGem(levelData[i]);
+                blocksData[i].GetIntoPosition();
+            }
+        }
+        hsm.Go(State.Validate_Board);
+    }
+
+    public void ToValidateBoard()
+    {
+        hsm.Go(State.Idle);
+        Debug.Log("ToValidateBoard Called");
+    }
+    public void ToShuffleBoard()
+    {
+        Debug.Log("ToShuffleBoard Called");
     }
 }

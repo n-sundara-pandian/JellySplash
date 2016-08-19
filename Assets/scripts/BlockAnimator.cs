@@ -13,7 +13,7 @@ public class BlockAnimator : MonoBehaviour {
     public void SetGem(int GemNo)
     {
         GemNumber = GemNo;
-        Debug.Log("Setting Gem " + GemNo);
+        blockAnimator.SetInteger("gem", 0);
         blockAnimator.SetInteger("gem", GemNo);
     }
 }
