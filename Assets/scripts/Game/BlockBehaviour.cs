@@ -27,6 +27,7 @@ public class BlockBehaviour : MonoBehaviour {
     {
         SetGem(0);
     }
+
     public void MoveDown()
     {
         if (moveDown <= 0)

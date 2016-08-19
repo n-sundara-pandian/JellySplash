@@ -11,7 +11,9 @@ public class ChainMatchController : MonoBehaviour {
 
     // This stores the finger that's currently dragging this GameObject
     private Lean.LeanFinger draggingFinger;
-
+    public LineRenderer Line;
+    List<Vector3> pointsList = new List<Vector3>();
+    Vector3 lineOffset = new Vector3(0,0,-2);
 
     protected virtual void OnEnable()
     {
@@ -70,6 +72,9 @@ public class ChainMatchController : MonoBehaviour {
             {
                 if (block.info.Id == chainList[chainList.Count - 2].info.Id)
                 {
+                    pointsList.Remove(pointsList[pointsList.Count - 1]);
+                    Line.SetVertexCount(pointsList.Count);
+                    Line.SetPosition(pointsList.Count - 1, pointsList[pointsList.Count - 1]);
                     lastBlock.SelectBlock(false);
                     chainList.Remove(lastBlock);
                     lastBlock = chainList[chainList.Count - 1];
@@ -77,6 +82,9 @@ public class ChainMatchController : MonoBehaviour {
             }
             else
             {
+                pointsList.Add(block.transform.position);
+                Line.SetVertexCount(pointsList.Count);
+                Line.SetPosition(pointsList.Count - 1, pointsList[pointsList.Count - 1]);
                 chainList.Add(block);
                 lastBlock = block;
                 block.SelectBlock(true);
@@ -90,6 +98,8 @@ public class ChainMatchController : MonoBehaviour {
         if (levelManager.hsm.GetCurrentState() != LevelLayout.State.Idle)
             return;
         chainList.Clear();
+        pointsList.Clear();
+        Line.SetWidth(10, 10);
         var ray = finger.GetRay();
         var hit = default(RaycastHit);
         // Was this finger pressed down on a collider?
@@ -119,6 +129,8 @@ public class ChainMatchController : MonoBehaviour {
         {
             block.SelectBlock(false);
         }
+        pointsList.Clear();
+        Line.SetVertexCount(0);
         if (chainList.Count >= 3)
             levelManager.hsm.Go(LevelLayout.State.Valid_match);
         else

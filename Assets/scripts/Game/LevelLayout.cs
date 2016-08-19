@@ -14,19 +14,7 @@ public class LevelLayout : MonoBehaviour {
         Validate_Board,
         Shuffle_Board,
     };
-    public class LevelItem
-    {
-        public int value;
-        //public int targetIndex;
-        public LevelItem(int val)
-        {
-            value = val;
-            //targetIndex = target;
-        }
-    }
 
-    public int width = 1;
-    public int height = 1;
     public Transform TopLeft;
     public Transform BottomRight;
     public GameObject block;
@@ -40,7 +28,7 @@ public class LevelLayout : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        blockPool = EZObjectPool.CreateObjectPool(block.gameObject, "Blocks", width * height * 2, true, true, false);
+        blockPool = EZObjectPool.CreateObjectPool(block.gameObject, "Blocks", Utils.width * Utils.height * 2, true, true, false);
         InitStateTransition();
         DetermineGrid();
     }
@@ -65,8 +53,6 @@ public class LevelLayout : MonoBehaviour {
         blockPool.DeActivatePool();
         levelData.Clear();
         blocksData.Clear();
-        Utils.width = width;
-        Utils.height = height;
         float totalAvailableWidth = Mathf.Abs(TopLeft.position.x - BottomRight.position.x);
         float totalAvailableHeight = Mathf.Abs(TopLeft.position.y - BottomRight.position.y);
         float mid_x = (TopLeft.position.x + totalAvailableWidth) / 2.0f;
@@ -74,15 +60,15 @@ public class LevelLayout : MonoBehaviour {
         for (int i = min_img_size; i < max_img_size; i++)
         {
             suggested_img_size = i;
-            if (i * width > totalAvailableWidth || i * height > totalAvailableHeight)
+            if (i * Utils.width > totalAvailableWidth || i * Utils.height > totalAvailableHeight)
                 break;
         }
         StartOffset = TopLeft.position;
         GameObject go;
         float half_size = suggested_img_size / 2;
-        for (int row = 0; row < height; row++)
+        for (int row = 0; row < Utils.height; row++)
         {
-            for (int col = 0; col < width; col++)
+            for (int col = 0; col < Utils.width; col++)
             {
                 if(blockPool.TryGetNextObject(StartOffset + new Vector3(col * suggested_img_size + half_size, -row * suggested_img_size - half_size + 1000, 1), Quaternion.identity, out go))
                 {
@@ -124,26 +110,14 @@ public class LevelLayout : MonoBehaviour {
         foreach (BlockBehaviour blk in chainList)
         {
             int id = blk.info.Id;
-            bool hasMoved = false;
             int above_blocks_count = 0;
             for (int i = id; i >= 0; i -= Utils.width)
             {
                 above_blocks_count++;
                 if (levelData[i] != 0)
                 {
-                    hasMoved = true;
                     blocksData[i].SetMoveDown(1);
-                   // blk.SetMoveDown(1);
                 }
-            }
-            if (!hasMoved)
-            {
-                for (int i = 0; i < above_blocks_count; i++)
-                {
-                  //  blk.info.row = i + 1;
-                 //   blk.SetMoveDown(i + 1);
-                }
-
             }
         }
         StartCoroutine(MoveDown(chainList, 0.25f));
@@ -168,10 +142,9 @@ public class LevelLayout : MonoBehaviour {
     }
     public void Shrink()
     {
-        for (int i = width - 1; i >= 0; --i)
-        //for (int i = 0; i < width; i++)
+        for (int i = Utils.width - 1; i >= 0; --i)
         {
-            int ktop = height - 1;
+            int ktop = Utils.height - 1;
             for (int j = ktop; j >= 0; --j)
             {
                 if (levelData[Utils.GetID(j, i)] == 0)

@@ -17,4 +17,10 @@ public class Utils : MonoBehaviour {
     {
         return Random.Range(1, 6);
     }
+    void Start()
+    {
+        width = PlayerPrefs.GetInt("LRSlider", 10);
+        height = PlayerPrefs.GetInt("UDSlider", 10);
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+    }
 }
