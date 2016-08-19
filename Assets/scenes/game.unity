@@ -354,7 +354,7 @@ GameObject:
   - 23: {fileID: 716583607}
   m_Layer: 0
   m_Name: BottomRightBoundary
-  m_TagString: Untagged
+  m_TagString: BottomRight
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -662,7 +662,7 @@ GameObject:
   - 23: {fileID: 1726960098}
   m_Layer: 0
   m_Name: TopLeftBoundary
-  m_TagString: Untagged
+  m_TagString: TopLeft
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -756,8 +756,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ced124a346d008f43bc51e71ef5e7fee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TopLeft: {fileID: 1726960097}
-  BottomRight: {fileID: 716583606}
   block: {fileID: 180020, guid: b14b09576b6e452489b4b4f267f47970, type: 2}
   levelData: 
   blocksData: []

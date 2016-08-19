@@ -15,12 +15,9 @@ public class LevelLayout : MonoBehaviour {
         Shuffle_Board,
     };
 
-    public Transform TopLeft;
-    public Transform BottomRight;
     public GameObject block;
     public List<int> levelData = new List<int>();
     public List<BlockBehaviour> blocksData = new List<BlockBehaviour>();
-    private Vector3 StartOffset;
     private EZObjectPool blockPool;
     public ChainMatchController chainMatchController;
 
@@ -28,9 +25,13 @@ public class LevelLayout : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        blockPool = EZObjectPool.CreateObjectPool(block.gameObject, "Blocks", Utils.width * Utils.height * 2, true, true, false);
         InitStateTransition();
-        DetermineGrid();
+        Invoke("StartLater", 0.5f);
+    }
+    void StartLater()
+    {
+        blockPool = EZObjectPool.CreateObjectPool(block.gameObject, "Blocks", Utils.width * Utils.height * 2, true, true, false);
+        Utils.DetermineGrid(ref blockPool, ref blocksData, ref levelData);
     }
 
     void InitStateTransition()
@@ -46,46 +47,6 @@ public class LevelLayout : MonoBehaviour {
         hsm.AddTransition(new KeyValuePair<State, State>(State.Validate_Board, State.Idle), ToIdle);
     }
 
-    public void DetermineGrid()
-    {
-        int min_img_size = 32;
-        int max_img_size = 256;
-        blockPool.DeActivatePool();
-        levelData.Clear();
-        blocksData.Clear();
-        float totalAvailableWidth = Mathf.Abs(TopLeft.position.x - BottomRight.position.x);
-        float totalAvailableHeight = Mathf.Abs(TopLeft.position.y - BottomRight.position.y);
-        float mid_x = (TopLeft.position.x + totalAvailableWidth) / 2.0f;
-        int suggested_img_size = min_img_size;
-        for (int i = min_img_size; i < max_img_size; i++)
-        {
-            suggested_img_size = i;
-            if (i * Utils.width > totalAvailableWidth || i * Utils.height > totalAvailableHeight)
-                break;
-        }
-        StartOffset = TopLeft.position;
-        GameObject go;
-        float half_size = suggested_img_size / 2;
-        for (int row = 0; row < Utils.height; row++)
-        {
-            for (int col = 0; col < Utils.width; col++)
-            {
-                if(blockPool.TryGetNextObject(StartOffset + new Vector3(col * suggested_img_size + half_size, -row * suggested_img_size - half_size + 1000, 1), Quaternion.identity, out go))
-                {
-                    BlockBehaviour blk = go.GetComponent<BlockBehaviour>();
-                    BlockBehaviour.BlockInfo info;
-                    info.GemType = Utils.GetValidGem();
-                    info.col = col;
-                    info.row = row;
-                    info.Id = Utils.GetID(row, col);//row * width + col;
-                    info.Size = suggested_img_size;
-                    blk.SetupBlock(StartOffset, info);
-                    levelData.Add(info.GemType);
-                    blocksData.Add(blk);
-                }
-            }
-        }
-    }
     public void ToIdle()
     {
         Debug.Log("ToIdle Called");
