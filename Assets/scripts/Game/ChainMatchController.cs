@@ -4,15 +4,14 @@ using System.Collections.Generic;
 
 public class ChainMatchController : MonoBehaviour {
 
-    public LayerMask LayerMask = UnityEngine.Physics.DefaultRaycastLayers;
-    List<BlockBehaviour> chainList = new List<BlockBehaviour>();
-    BlockBehaviour lastBlock = null;
     public LevelLayout levelManager;
-
-    // This stores the finger that's currently dragging this GameObject
-    private Lean.LeanFinger draggingFinger;
     public LineRenderer Line;
-    List<Vector3> pointsList = new List<Vector3>();
+
+    private List<Vector3> pointsList = new List<Vector3>();
+    private LayerMask LayerMask = UnityEngine.Physics.DefaultRaycastLayers;
+    private List<BlockBehaviour> chainList = new List<BlockBehaviour>();
+    private BlockBehaviour lastBlock = null;
+    private Lean.LeanFinger draggingFinger;
 
     protected virtual void OnEnable()
     {
@@ -139,7 +138,10 @@ public class ChainMatchController : MonoBehaviour {
         if (chainList.Count >= 3)
             levelManager.hsm.Go(LevelLayout.State.Valid_match);
         else
+        {
             levelManager.hsm.Go(LevelLayout.State.Invalid_Match);
+            AudioManager.Main.PlayNewSound("deselect");
+        }
     }
 
     public List<BlockBehaviour> GetMatchedChain()

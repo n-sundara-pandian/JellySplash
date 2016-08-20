@@ -2,6 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using EZObjectPools;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using DG.Tweening;
+
 public class LevelLayout : MonoBehaviour {
 
     public enum State
@@ -13,17 +17,28 @@ public class LevelLayout : MonoBehaviour {
         Fill_Items,
         Validate_Board,
         Shuffle_Board,
+        EndGame,
+        GotoMenu,
     };
 
     public GameObject block;
-    public List<int> levelData = new List<int>();
-    public List<BlockBehaviour> blocksData = new List<BlockBehaviour>();
-    private EZObjectPool blockPool;
-    public ChainMatchController chainMatchController;
     public HSM hsm;
-    Sound bgMusic;
+    public ChainMatchController chainMatchController;
+    public Text scoreText;
+    public Text movesText;
+    public Image resultImage;
+    public Text resultText;
+
+    private List<int> levelData = new List<int>();
+    private List<BlockBehaviour> blocksData = new List<BlockBehaviour>();
+    private Sound bgMusic;
+    private EZObjectPool blockPool;
+    private int score = 0;
+    private int movesRemaining = 20;
+    private int totalMoves = 20;
     // Use this for initialization
     void Start () {
+        resultImage.transform.DOMoveX(1000, 0.1f);
         InitStateTransition();
         Invoke("StartLater", 0.5f);
         bgMusic = AudioManager.Main.NewSound("bg_music", loop: true, interrupts: false);
@@ -34,12 +49,13 @@ public class LevelLayout : MonoBehaviour {
         blockPool = EZObjectPool.CreateObjectPool(block.gameObject, "Blocks", Utils.width * Utils.height * 2, true, true, false);
         ReGenerate();
         hsm.Go(State.Validate_Board);
+        movesRemaining = totalMoves;
     }
 
     public void ReGenerate()
     {
         AudioManager.Main.PlayNewSound("falldown");
-        Utils.DetermineGrid(ref blockPool, ref blocksData, ref levelData);
+        Utils.PopulateGrid(ref blockPool, ref blocksData, ref levelData);
     }
     void InitStateTransition()
     {
@@ -53,14 +69,34 @@ public class LevelLayout : MonoBehaviour {
         hsm.AddTransition(new KeyValuePair<State, State>(State.Shuffle_Board, State.Validate_Board), ToValidateBoard);
         hsm.AddTransition(new KeyValuePair<State, State>(State.Validate_Board, State.Idle), ToIdle);
         hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.Validate_Board), ToValidateBoard);
-
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.EndGame), ToEndGame);
+        hsm.AddTransition(new KeyValuePair<State, State>(State.EndGame, State.GotoMenu), GotoMenu);
     }
-
-    public void ToIdle()
+    void ToEndGame()
     {
+        StartCoroutine(PlayEndGame());
+    }
+    IEnumerator PlayEndGame()
+    {
+        string result = string.Format("Good Job ! You have scored {0} points in {1} moves", score, totalMoves);
+        resultText.text = result;
+        resultImage.transform.DOMoveX(0, 0.5f);
+        yield return new WaitForSeconds(5.0f);
+        resultImage.transform.DOMoveX(-1000, 0.25f);
+        yield return new WaitForSeconds(0.25f);
+        hsm.Go(State.GotoMenu);
+    }
+    void ToIdle()
+    {
+        if (movesRemaining <= 0)
+        {
+            hsm.Go(State.EndGame);
+        }
     }
     public void ToValidMatch()
     {
+        movesRemaining--;
+        movesText.text = movesRemaining.ToString();
         hsm.Go(State.Remove_Items);
     }
     public void ToInvalid()
@@ -70,12 +106,26 @@ public class LevelLayout : MonoBehaviour {
     public void ToRemoveItems()
     {
         List<BlockBehaviour> chainList = chainMatchController.GetMatchedChain();
+        float delay = 0;
         foreach (BlockBehaviour blk in chainList)
         {
             levelData[blk.info.Id]= 0;
-            blocksData[blk.info.Id].SetGem(0);
-            blk.HideItem();
+            delay += 0.1f;
+            StartCoroutine(Disappear(blk, delay));
         }
+        StartCoroutine(MoveDown(chainList, delay));
+    }
+    IEnumerator Disappear(BlockBehaviour blk, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        AudioManager.Main.PlayNewSound("dispear");
+        blocksData[blk.info.Id].SetGem(0);
+        blk.HideItem();
+        score += (int)(500.0f * delay);
+        scoreText.text = score.ToString();
+    }
+    IEnumerator MoveDown(List<BlockBehaviour> chainList, float delay)
+    {
         foreach (BlockBehaviour blk in chainList)
         {
             int id = blk.info.Id;
@@ -90,19 +140,14 @@ public class LevelLayout : MonoBehaviour {
             }
         }
         AudioManager.Main.PlayNewSound("falldown");
-        StartCoroutine(MoveDown(chainList, 0.25f));
-    }
-
-    IEnumerator MoveDown(List<BlockBehaviour> chainList, float delayTime)
-    {
-
+        yield return new WaitForSeconds(delay);
         Shrink();
 
         foreach (BlockBehaviour blk in blocksData)
         {
             blk.MoveDown();
         }
-        yield return new WaitForSeconds(delayTime);
+        yield return new WaitForSeconds(0.25f);
         for (int i = blocksData.Count - 1; i >= 0; --i)
         {
             blocksData[i].SetGem(levelData[i]);
@@ -192,5 +237,9 @@ public class LevelLayout : MonoBehaviour {
     {
         ReGenerate();
         hsm.Go(State.Validate_Board);
+    }
+    public void GotoMenu()
+    {
+        SceneManager.LoadScene("menu");
     }
 }

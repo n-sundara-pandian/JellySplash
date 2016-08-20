@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using EZObjectPools;
+
 public class Utils : MonoBehaviour {
     public static int width;
     public static int height;
@@ -18,7 +19,7 @@ public class Utils : MonoBehaviour {
     {
         return Random.Range(1, 6);
     }
-    public static void DetermineGrid(ref EZObjectPool blockPool, ref List<BlockBehaviour> blocksData, ref List<int> levelData)
+    public static void PopulateGrid(ref EZObjectPool blockPool, ref List<BlockBehaviour> blocksData, ref List<int> levelData)
     {
         Init();
         GameObject temp = GameObject.FindGameObjectWithTag("TopLeft");

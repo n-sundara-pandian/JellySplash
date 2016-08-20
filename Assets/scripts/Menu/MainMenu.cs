@@ -22,7 +22,7 @@ public class MainMenu : MonoBehaviour {
     void StartLater()
     {
         Init();
-        Utils.DetermineGrid(ref blockPool, ref blocksData, ref levelData);
+        Utils.PopulateGrid(ref blockPool, ref blocksData, ref levelData);
     }
 
     void Init()
@@ -34,13 +34,13 @@ public class MainMenu : MonoBehaviour {
     public void OnWidthSelect()
     {
         PlayerPrefs.SetInt("LRSlider", (int)LRSlider.value);
-        Utils.DetermineGrid(ref blockPool, ref blocksData, ref levelData);
+        Utils.PopulateGrid(ref blockPool, ref blocksData, ref levelData);
     }
 
     public void OnHeightSelect()
     {
         PlayerPrefs.SetInt("UDSlider", (int)UDSlider.value);
-        Utils.DetermineGrid(ref blockPool, ref blocksData, ref levelData);
+        Utils.PopulateGrid(ref blockPool, ref blocksData, ref levelData);
     }
     public void OnStartGame()
     {

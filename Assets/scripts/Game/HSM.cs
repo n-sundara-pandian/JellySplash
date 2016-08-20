@@ -14,6 +14,7 @@ public class HSM : MonoBehaviour {
     {
         yield return new WaitForSeconds(delayTime);
         TransitionMap[key]();
+        Debug.Log(currentState.ToString());
         // Now do your thing here
     }
     public void Go(LevelLayout.State nextState, float delay = 0.1f)
@@ -23,11 +24,10 @@ public class HSM : MonoBehaviour {
         {
             currentState = nextState;
             StartCoroutine(transit(key, delay));
-            
         }
         else
         {
-            Console.Write("Could not transit LevelLayout.State " + Environment.NewLine);
+            Debug.Log("Could not transit LevelLayout.State ");
         }
     }
 
