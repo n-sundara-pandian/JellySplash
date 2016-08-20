@@ -13,7 +13,6 @@ public class ChainMatchController : MonoBehaviour {
     private Lean.LeanFinger draggingFinger;
     public LineRenderer Line;
     List<Vector3> pointsList = new List<Vector3>();
-    Vector3 lineOffset = new Vector3(0,0,-2);
 
     protected virtual void OnEnable()
     {
@@ -78,6 +77,7 @@ public class ChainMatchController : MonoBehaviour {
                     lastBlock.SelectBlock(false);
                     chainList.Remove(lastBlock);
                     lastBlock = chainList[chainList.Count - 1];
+                    AudioManager.Main.PlayNewSound("deselect");
                 }
             }
             else
@@ -88,6 +88,7 @@ public class ChainMatchController : MonoBehaviour {
                 chainList.Add(block);
                 lastBlock = block;
                 block.SelectBlock(true);
+                AudioManager.Main.PlayNewSound("select");
             }
         }
 
@@ -95,6 +96,8 @@ public class ChainMatchController : MonoBehaviour {
 
     public void OnFingerDown(Lean.LeanFinger finger)
     {
+        if (draggingFinger != null && finger != draggingFinger)
+            return;
         if (levelManager.hsm.GetCurrentState() != LevelLayout.State.Idle)
             return;
         chainList.Clear();
@@ -118,12 +121,14 @@ public class ChainMatchController : MonoBehaviour {
     public void OnFingerUp(Lean.LeanFinger finger)
     {
         // Was the current finger lifted from the screen?
-        if (finger == draggingFinger)
+        if (finger != draggingFinger)
         {
+            return;
+        }
             // Unset the current finger
             draggingFinger = null;
             lastBlock = null;
-        }
+        
         lastBlock = null;
         foreach (BlockBehaviour block in chainList)
         {

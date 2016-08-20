@@ -20,20 +20,27 @@ public class LevelLayout : MonoBehaviour {
     public List<BlockBehaviour> blocksData = new List<BlockBehaviour>();
     private EZObjectPool blockPool;
     public ChainMatchController chainMatchController;
-
     public HSM hsm;
-
+    Sound bgMusic;
     // Use this for initialization
     void Start () {
         InitStateTransition();
         Invoke("StartLater", 0.5f);
+        bgMusic = AudioManager.Main.NewSound("bg_music", loop: true, interrupts: false);
+        bgMusic.PlayOrPause(true, false); 
     }
     void StartLater()
     {
         blockPool = EZObjectPool.CreateObjectPool(block.gameObject, "Blocks", Utils.width * Utils.height * 2, true, true, false);
-        Utils.DetermineGrid(ref blockPool, ref blocksData, ref levelData);
+        ReGenerate();
+        hsm.Go(State.Validate_Board);
     }
 
+    public void ReGenerate()
+    {
+        AudioManager.Main.PlayNewSound("falldown");
+        Utils.DetermineGrid(ref blockPool, ref blocksData, ref levelData);
+    }
     void InitStateTransition()
     {
         hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.Valid_match), ToValidMatch);
@@ -45,11 +52,12 @@ public class LevelLayout : MonoBehaviour {
         hsm.AddTransition(new KeyValuePair<State, State>(State.Validate_Board, State.Shuffle_Board), ToShuffleBoard);
         hsm.AddTransition(new KeyValuePair<State, State>(State.Shuffle_Board, State.Validate_Board), ToValidateBoard);
         hsm.AddTransition(new KeyValuePair<State, State>(State.Validate_Board, State.Idle), ToIdle);
+        hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.Validate_Board), ToValidateBoard);
+
     }
 
     public void ToIdle()
     {
-        Debug.Log("ToIdle Called");
     }
     public void ToValidMatch()
     {
@@ -81,6 +89,7 @@ public class LevelLayout : MonoBehaviour {
                 }
             }
         }
+        AudioManager.Main.PlayNewSound("falldown");
         StartCoroutine(MoveDown(chainList, 0.25f));
     }
 
@@ -131,6 +140,7 @@ public class LevelLayout : MonoBehaviour {
 
     public void ToFillItems()
     {
+        AudioManager.Main.PlayNewSound("falldown");
         List<BlockBehaviour> emptyChainList = new List<BlockBehaviour>();
         for (int i = 0; i < blocksData.Count; i++)
         {
@@ -145,14 +155,42 @@ public class LevelLayout : MonoBehaviour {
         }
         hsm.Go(State.Validate_Board);
     }
+    void ChainCount(int row, int col, long old, ref int count)
+    {
+        if ((row < 0) || (row >= Utils.height)) return;
+        if ((col < 0) || (col >= Utils.width)) return;
+        if (count > 2) return;
+        int id = Utils.GetID(row, col);
+        if (levelData[id] == old)
+        {
+            count++;
+            ChainCount(row + 1, col, old, ref count);
+            ChainCount(row - 1, col, old, ref count);
+            ChainCount(row, col + 1, old, ref count);
+            ChainCount(row, col - 1, old, ref count);
+            ChainCount(row + 1, col + 1, old, ref count);
+            ChainCount(row + 1, col - 1, old, ref count);
+            ChainCount(row - 1, col + 1, old, ref count);
+            ChainCount(row - 1, col - 1, old, ref count);
+        }
+    }
+
 
     public void ToValidateBoard()
     {
-        hsm.Go(State.Idle);
-        Debug.Log("ToValidateBoard Called");
+        for (int i = 0; i < levelData.Count; i++)
+        {
+            int row = 0, col = 0, count = 0;
+            Utils.GetRowCol(i, out row, out col);
+            ChainCount(row, col,levelData[i], ref count);
+            if (count > 2)
+                hsm.Go(State.Idle);
+        }
+        hsm.Go(State.Shuffle_Board);
     }
     public void ToShuffleBoard()
     {
-        Debug.Log("ToShuffleBoard Called");
+        ReGenerate();
+        hsm.Go(State.Validate_Board);
     }
 }

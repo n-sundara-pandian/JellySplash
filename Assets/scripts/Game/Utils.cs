@@ -25,6 +25,7 @@ public class Utils : MonoBehaviour {
         Transform TopLeft = temp.GetComponent<Transform>();
         temp = GameObject.FindGameObjectWithTag("BottomRight");
         Transform BottomRight = temp.GetComponent<Transform>();
+        temp = GameObject.FindGameObjectWithTag("BackPanel");
         Vector3 StartOffset;
         int min_img_size = 32;
         int max_img_size = 256;
@@ -33,7 +34,6 @@ public class Utils : MonoBehaviour {
         blocksData.Clear();
         float totalAvailableWidth = Mathf.Abs(TopLeft.position.x - BottomRight.position.x);
         float totalAvailableHeight = Mathf.Abs(TopLeft.position.y - BottomRight.position.y);
-        float mid_x = (TopLeft.position.x + totalAvailableWidth) / 2.0f;
         int suggested_img_size = min_img_size;
         for (int i = min_img_size; i < max_img_size; i++)
         {
@@ -42,8 +42,13 @@ public class Utils : MonoBehaviour {
                 break;
         }
         StartOffset = TopLeft.position;
-        GameObject go;
         float half_size = suggested_img_size / 2;
+        if (temp != null)
+        {
+            temp.transform.localScale = new Vector3(suggested_img_size * (width + 1), suggested_img_size * (height + 1), 1);
+            temp.transform.position = StartOffset + new Vector3(-half_size, half_size, 2);
+        }
+        GameObject go;
         for (int row = 0; row < Utils.height; row++)
         {
             for (int col = 0; col < Utils.width; col++)
