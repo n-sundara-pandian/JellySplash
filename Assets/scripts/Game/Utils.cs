@@ -19,13 +19,18 @@ public class Utils : MonoBehaviour {
     {
         return Random.Range(1, 6);
     }
+    public static Vector3 RectTransformToWorldPoint(RectTransform transform)
+    {
+        return Camera.main.ScreenToWorldPoint(transform.TransformPoint(transform.rect.center));
+    }
+
     public static void PopulateGrid(ref EZObjectPool blockPool, ref List<BlockBehaviour> blocksData, ref List<int> levelData)
     {
         Init();
         GameObject temp = GameObject.FindGameObjectWithTag("TopLeft");
-        Transform TopLeft = temp.GetComponent<Transform>();
+        RectTransform TopLeft = temp.GetComponent<RectTransform>();
         temp = GameObject.FindGameObjectWithTag("BottomRight");
-        Transform BottomRight = temp.GetComponent<Transform>();
+        RectTransform BottomRight = temp.GetComponent<RectTransform>();
         temp = GameObject.FindGameObjectWithTag("BackPanel");
         Vector3 StartOffset;
         int min_img_size = 32;
@@ -33,8 +38,11 @@ public class Utils : MonoBehaviour {
         blockPool.DeActivatePool();
         levelData.Clear();
         blocksData.Clear();
-        float totalAvailableWidth = Mathf.Abs(TopLeft.position.x - BottomRight.position.x);
-        float totalAvailableHeight = Mathf.Abs(TopLeft.position.y - BottomRight.position.y);
+        Vector3 TL = Utils.RectTransformToWorldPoint(TopLeft);
+        Vector3 BR = Utils.RectTransformToWorldPoint(BottomRight);
+        
+        float totalAvailableWidth = Mathf.Abs(TL.x - BR.x);
+        float totalAvailableHeight = Mathf.Abs(TL.y - BR.y);
         int suggested_img_size = min_img_size;
         for (int i = min_img_size; i < max_img_size; i++)
         {
@@ -42,11 +50,15 @@ public class Utils : MonoBehaviour {
             if (i * Utils.width > totalAvailableWidth || i * Utils.height > totalAvailableHeight)
                 break;
         }
-        StartOffset = TopLeft.position;
-        float half_size = suggested_img_size / 2;
+        StartOffset = TL;
+        float half_size = suggested_img_size / 4;
+        float start_x = (totalAvailableWidth - suggested_img_size * (width + 1)) / 2 ;
+        float start_y = (totalAvailableHeight - suggested_img_size * (height+ 1)) / 2;
+        StartOffset.x -= start_x;
+        StartOffset.y -= start_y;
         if (temp != null)
         {
-            temp.transform.localScale = new Vector3(suggested_img_size * (width + 1), suggested_img_size * (height + 1), 1);
+            temp.transform.localScale = new Vector3(suggested_img_size * (width + 0.5f), suggested_img_size * (height + 0.5f), 1);
             temp.transform.position = StartOffset + new Vector3(-half_size, half_size, 2);
         }
         GameObject go;

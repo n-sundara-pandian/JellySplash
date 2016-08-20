@@ -38,7 +38,7 @@ public class LevelLayout : MonoBehaviour {
     private int totalMoves = 20;
     // Use this for initialization
     void Start () {
-        resultImage.transform.DOMoveX(1000, 0.1f);
+        resultImage.transform.DOMoveX(2000, 0.1f);
         InitStateTransition();
         Invoke("StartLater", 0.5f);
         bgMusic = AudioManager.Main.NewSound("bg_music", loop: true, interrupts: false);
@@ -229,7 +229,10 @@ public class LevelLayout : MonoBehaviour {
             Utils.GetRowCol(i, out row, out col);
             ChainCount(row, col,levelData[i], ref count);
             if (count > 2)
+            {
                 hsm.Go(State.Idle);
+                return;
+            }
         }
         hsm.Go(State.Shuffle_Board);
     }

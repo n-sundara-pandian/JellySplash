@@ -27,7 +27,7 @@ public class HSM : MonoBehaviour {
         }
         else
         {
-            Debug.Log("Could not transit LevelLayout.State ");
+            Debug.Log("Failed To Transit From " + currentState.ToString() +  " to " + nextState.ToString());
         }
     }
 
