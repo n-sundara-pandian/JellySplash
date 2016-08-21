@@ -6,6 +6,8 @@ using EZObjectPools;
 public class Utils : MonoBehaviour {
     public static int width;
     public static int height;
+    public static int highScore;
+    public static int longestChain;
     public static int GetID(int row, int col)
     {
         return row * width + col;
@@ -52,9 +54,7 @@ public class Utils : MonoBehaviour {
         }
         StartOffset = TL;
         float half_size = suggested_img_size / 4;
-        //float start_x = (totalAvailableWidth - suggested_img_size * (width + 1)) / 2 ;
         float start_y = (totalAvailableHeight - suggested_img_size * (height+ 1)) / 2;
-        //StartOffset.x -= start_x;
         StartOffset.y -= start_y;
         if (temp != null)
         {
@@ -86,7 +86,13 @@ public class Utils : MonoBehaviour {
     {
         width = PlayerPrefs.GetInt("LRSlider", 10);
         height = PlayerPrefs.GetInt("UDSlider", 10);
+        highScore = PlayerPrefs.GetInt("highScore", 0);
+        longestChain = PlayerPrefs.GetInt("longestChain", 0);
 
+    }
+    public static void SavePref(string key, int value)
+    {
+        PlayerPrefs.SetInt(key, value);
     }
     void Start()
     {

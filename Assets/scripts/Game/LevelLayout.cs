@@ -22,6 +22,7 @@ public class LevelLayout : MonoBehaviour {
     };
 
     public GameObject block;
+    public GameObject particle;
     public HSM hsm;
     public ChainMatchController chainMatchController;
     public Text scoreText;
@@ -33,10 +34,13 @@ public class LevelLayout : MonoBehaviour {
     private List<BlockBehaviour> blocksData = new List<BlockBehaviour>();
     private Sound bgMusic;
     private EZObjectPool blockPool;
+    private EZObjectPool particlePool;
     private int score = 0;
     private int movesRemaining = 20;
     private int totalMoves = 20;
     private bool warned = false;
+    private bool congradulated = false;
+    bool msgBoxBusy = false;
     // Use this for initialization
     void Start () {
         resultImage.transform.DOMoveX(2000, 0.1f);
@@ -48,6 +52,8 @@ public class LevelLayout : MonoBehaviour {
     void StartLater()
     {
         blockPool = EZObjectPool.CreateObjectPool(block.gameObject, "Blocks", Utils.width * Utils.height * 2, true, true, false);
+        particlePool = EZObjectPool.CreateObjectPool(particle.gameObject, "Particles", (Utils.width * Utils.height)/ 2, true, true, false);
+        particlePool.DeActivatePool();
         ReGenerate();
         hsm.Go(State.Validate_Board);
         movesRemaining = totalMoves;
@@ -73,12 +79,33 @@ public class LevelLayout : MonoBehaviour {
         hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.EndGame), ToEndGame);
         hsm.AddTransition(new KeyValuePair<State, State>(State.EndGame, State.GotoMenu), GotoMenu);
     }
+
+    void ShowFx(Vector3 pos, int gemno)
+    {
+        GameObject go;
+        if (particlePool.TryGetNextObject(pos, Quaternion.identity, out go))
+        {
+            ShockFlame fx = go.GetComponent<ShockFlame>();
+            if (fx != null)
+            {
+                fx.SetColor(gemno);
+            }
+        }
+    }
     void ToEndGame()
     {
+        if (score > Utils.highScore)
+        {
+            Utils.highScore = score;
+            Utils.SavePref("highScore", score);
+        }
         StartCoroutine(PlayEndGame());
     }
     IEnumerator SetMessage(string msg, float delay)
     {
+        if (msgBoxBusy)
+            yield return new WaitForSeconds(1.0f);
+        msgBoxBusy = true;
         resultText.text = msg;
         Vector3 pos = resultImage.transform.position;
         pos.x = 2000;
@@ -88,6 +115,7 @@ public class LevelLayout : MonoBehaviour {
         yield return new WaitForSeconds(delay);
         resultImage.transform.DOMoveX(-2000, 0.25f);
         yield return new WaitForSeconds(0.25f);
+        msgBoxBusy = false;
     }
 
     IEnumerator PlayEndGame()
@@ -109,6 +137,14 @@ public class LevelLayout : MonoBehaviour {
         {
             hsm.Go(State.EndGame);
         }
+        else if (!congradulated && movesRemaining >= 1 && score > Utils.highScore)
+        {
+            congradulated = true;
+            Utils.highScore = score;
+            Utils.SavePref("highScore", score);
+            string result = string.Format("Woo hoo, This is your new high score. congrats");
+            StartCoroutine(SetMessage(result, 3.0f));
+        }
     }
     public void ToValidMatch()
     {
@@ -123,6 +159,14 @@ public class LevelLayout : MonoBehaviour {
     public void ToRemoveItems()
     {
         List<BlockBehaviour> chainList = chainMatchController.GetMatchedChain();
+        if (chainList.Count > Utils.longestChain)
+        {
+            Utils.longestChain = chainList.Count;
+            Utils.SavePref("longestChain", chainList.Count);
+            string result = string.Format("Woo hoo, This is your longest match. keep rockin");
+            StartCoroutine(SetMessage(result, 3.0f));
+        }
+
         float delay = 0;
         foreach (BlockBehaviour blk in chainList)
         {
@@ -135,6 +179,7 @@ public class LevelLayout : MonoBehaviour {
     IEnumerator Disappear(BlockBehaviour blk, float delay)
     {
         yield return new WaitForSeconds(delay);
+        ShowFx(blk.transform.position, blk.info.GemType);
         AudioManager.Main.PlayNewSound("dispear");
         blocksData[blk.info.Id].SetGem(0);
         blk.HideItem();
