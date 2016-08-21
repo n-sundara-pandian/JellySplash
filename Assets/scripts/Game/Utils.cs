@@ -52,9 +52,9 @@ public class Utils : MonoBehaviour {
         }
         StartOffset = TL;
         float half_size = suggested_img_size / 4;
-        float start_x = (totalAvailableWidth - suggested_img_size * (width + 1)) / 2 ;
+        //float start_x = (totalAvailableWidth - suggested_img_size * (width + 1)) / 2 ;
         float start_y = (totalAvailableHeight - suggested_img_size * (height+ 1)) / 2;
-        StartOffset.x -= start_x;
+        //StartOffset.x -= start_x;
         StartOffset.y -= start_y;
         if (temp != null)
         {

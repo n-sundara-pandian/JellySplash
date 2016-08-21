@@ -36,6 +36,7 @@ public class LevelLayout : MonoBehaviour {
     private int score = 0;
     private int movesRemaining = 20;
     private int totalMoves = 20;
+    private bool warned = false;
     // Use this for initialization
     void Start () {
         resultImage.transform.DOMoveX(2000, 0.1f);
@@ -76,19 +77,35 @@ public class LevelLayout : MonoBehaviour {
     {
         StartCoroutine(PlayEndGame());
     }
+    IEnumerator SetMessage(string msg, float delay)
+    {
+        resultText.text = msg;
+        Vector3 pos = resultImage.transform.position;
+        pos.x = 2000;
+        resultImage.transform.position = pos;
+        yield return new WaitForSeconds(0.1f);
+        resultImage.transform.DOMoveX(0, 0.5f);
+        yield return new WaitForSeconds(delay);
+        resultImage.transform.DOMoveX(-2000, 0.25f);
+        yield return new WaitForSeconds(0.25f);
+    }
+
     IEnumerator PlayEndGame()
     {
         string result = string.Format("Good Job ! You have scored {0} points in {1} moves", score, totalMoves);
-        resultText.text = result;
-        resultImage.transform.DOMoveX(0, 0.5f);
-        yield return new WaitForSeconds(5.0f);
-        resultImage.transform.DOMoveX(-1000, 0.25f);
-        yield return new WaitForSeconds(0.25f);
+        StartCoroutine(SetMessage(result, 5.0f));
+        yield return new WaitForSeconds(5.5f);
         hsm.Go(State.GotoMenu);
     }
     void ToIdle()
     {
-        if (movesRemaining <= 0)
+        if (movesRemaining == 5 && !warned)
+        {
+            string result = string.Format("You Have 5 Moves Left");
+            StartCoroutine(SetMessage(result, 3.0f));
+            warned = true;
+        }
+        else if (movesRemaining <= 0)
         {
             hsm.Go(State.EndGame);
         }
