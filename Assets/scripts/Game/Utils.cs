@@ -8,6 +8,7 @@ public class Utils : MonoBehaviour {
     public static int height;
     public static int highScore;
     public static int longestChain;
+	public static int current_level = 3;
     public static int GetID(int row, int col)
     {
         return row * width + col;
@@ -84,8 +85,8 @@ public class Utils : MonoBehaviour {
     }
     static void Init()
     {
-        width = PlayerPrefs.GetInt("LRSlider", 10);
-        height = PlayerPrefs.GetInt("UDSlider", 10);
+		width = 9;//PlayerPrefs.GetInt("LRSlider", 10);
+		height = 9;//PlayerPrefs.GetInt("UDSlider", 10);
         highScore = PlayerPrefs.GetInt("highScore", 0);
         longestChain = PlayerPrefs.GetInt("longestChain", 0);
 

@@ -41,6 +41,8 @@ public class LevelLayout : MonoBehaviour {
     private bool warned = false;
     private bool congradulated = false;
     bool msgBoxBusy = false;
+
+    #region Init
     // Use this for initialization
     void Start () {
         resultImage.transform.DOMoveX(2000, 0.1f);
@@ -55,7 +57,7 @@ public class LevelLayout : MonoBehaviour {
         particlePool = EZObjectPool.CreateObjectPool(particle.gameObject, "Particles", (Utils.width * Utils.height)/ 2, true, true, false);
         particlePool.DeActivatePool();
         ReGenerate();
-        hsm.Go(State.Validate_Board);
+        hsm.Go(HSM.State.Validate_Board);
         movesRemaining = totalMoves;
     }
 
@@ -66,19 +68,20 @@ public class LevelLayout : MonoBehaviour {
     }
     void InitStateTransition()
     {
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.Valid_match), ToValidMatch);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.Invalid_Match), ToInvalid);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Invalid_Match, State.Idle), ToIdle);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Valid_match, State.Remove_Items), ToRemoveItems);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Remove_Items, State.Fill_Items), ToFillItems);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Fill_Items, State.Validate_Board), ToValidateBoard);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Validate_Board, State.Shuffle_Board), ToShuffleBoard);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Shuffle_Board, State.Validate_Board), ToValidateBoard);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Validate_Board, State.Idle), ToIdle);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.Validate_Board), ToValidateBoard);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.Idle, State.EndGame), ToEndGame);
-        hsm.AddTransition(new KeyValuePair<State, State>(State.EndGame, State.GotoMenu), GotoMenu);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.Valid_match), ToValidMatch);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.Invalid_Match), ToInvalid);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Invalid_Match, HSM.State.Idle), ToIdle);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Valid_match, HSM.State.Remove_Items), ToRemoveItems);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Remove_Items, HSM.State.Fill_Items), ToFillItems);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Fill_Items, HSM.State.Validate_Board), ToValidateBoard);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Validate_Board, HSM.State.Shuffle_Board), ToShuffleBoard);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Shuffle_Board, HSM.State.Validate_Board), ToValidateBoard);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Validate_Board, HSM.State.Idle), ToIdle);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.Validate_Board), ToValidateBoard);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.EndGame), ToEndGame);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.EndGame, HSM.State.GotoMenu), GotoMenu);
     }
+    #endregion Init
 
     void ShowFx(Vector3 pos, int gemno)
     {
@@ -91,15 +94,6 @@ public class LevelLayout : MonoBehaviour {
                 fx.SetColor(gemno);
             }
         }
-    }
-    void ToEndGame()
-    {
-        if (score > Utils.highScore)
-        {
-            Utils.highScore = score;
-            Utils.SavePref("highScore", score);
-        }
-        StartCoroutine(PlayEndGame());
     }
     IEnumerator SetMessage(string msg, float delay)
     {
@@ -123,58 +117,7 @@ public class LevelLayout : MonoBehaviour {
         string result = string.Format("Good Job ! You have scored {0} points in {1} moves", score, totalMoves);
         StartCoroutine(SetMessage(result, 5.0f));
         yield return new WaitForSeconds(5.5f);
-        hsm.Go(State.GotoMenu);
-    }
-    void ToIdle()
-    {
-        if (movesRemaining == 5 && !warned)
-        {
-            string result = string.Format("You Have 5 Moves Left");
-            StartCoroutine(SetMessage(result, 3.0f));
-            warned = true;
-        }
-        else if (movesRemaining <= 0)
-        {
-            hsm.Go(State.EndGame);
-        }
-        else if (!congradulated && movesRemaining >= 1 && score > Utils.highScore)
-        {
-            congradulated = true;
-            Utils.highScore = score;
-            Utils.SavePref("highScore", score);
-            string result = string.Format("Woo hoo, This is your new high score. congrats");
-            StartCoroutine(SetMessage(result, 3.0f));
-        }
-    }
-    public void ToValidMatch()
-    {
-        movesRemaining--;
-        movesText.text = movesRemaining.ToString();
-        hsm.Go(State.Remove_Items);
-    }
-    public void ToInvalid()
-    {
-        hsm.Go(State.Idle);
-    }
-    public void ToRemoveItems()
-    {
-        List<BlockBehaviour> chainList = chainMatchController.GetMatchedChain();
-        if (chainList.Count > Utils.longestChain)
-        {
-            Utils.longestChain = chainList.Count;
-            Utils.SavePref("longestChain", chainList.Count);
-            string result = string.Format("Woo hoo, This is your longest match. keep rockin");
-            StartCoroutine(SetMessage(result, 3.0f));
-        }
-
-        float delay = 0;
-        foreach (BlockBehaviour blk in chainList)
-        {
-            levelData[blk.info.Id]= 0;
-            delay += 0.1f;
-            StartCoroutine(Disappear(blk, delay));
-        }
-        StartCoroutine(MoveDown(chainList, delay));
+        hsm.Go(HSM.State.GotoMenu);
     }
     IEnumerator Disappear(BlockBehaviour blk, float delay)
     {
@@ -215,7 +158,7 @@ public class LevelLayout : MonoBehaviour {
             blocksData[i].SetGem(levelData[i]);
             blocksData[i].UpdatePosition();
         }
-        hsm.Go(State.Fill_Items);
+        hsm.Go(HSM.State.Fill_Items);
     }
     public void Shrink()
     {
@@ -245,23 +188,6 @@ public class LevelLayout : MonoBehaviour {
         }
     }
 
-    public void ToFillItems()
-    {
-        AudioManager.Main.PlayNewSound("falldown");
-        List<BlockBehaviour> emptyChainList = new List<BlockBehaviour>();
-        for (int i = 0; i < blocksData.Count; i++)
-        {
-            if (levelData[i] == 0)
-            {
-                emptyChainList.Add(blocksData[i]);
-                blocksData[i].UpdatePosition(-10);
-                levelData[i] = Utils.GetValidGem();
-                blocksData[i].SetGem(levelData[i]);
-                blocksData[i].GetIntoPosition();
-            }
-        }
-        hsm.Go(State.Validate_Board);
-    }
     void ChainCount(int row, int col, long old, ref int count)
     {
         if ((row < 0) || (row >= Utils.height)) return;
@@ -282,29 +208,107 @@ public class LevelLayout : MonoBehaviour {
         }
     }
 
+#region CallBacks
+    void ToIdle()
+    {
+        if (movesRemaining == 5 && !warned)
+        {
+            string result = string.Format("You Have 5 Moves Left");
+            StartCoroutine(SetMessage(result, 3.0f));
+            warned = true;
+        }
+        else if (movesRemaining <= 0)
+        {
+            hsm.Go(HSM.State.EndGame);
+        }
+        else if (!congradulated && movesRemaining >= 1 && score > Utils.highScore)
+        {
+            congradulated = true;
+            Utils.highScore = score;
+            Utils.SavePref("highScore", score);
+            string result = string.Format("Woo hoo, This is your new high score. congrats");
+            StartCoroutine(SetMessage(result, 3.0f));
+        }
+    }
+    void ToValidMatch()
+    {
+        movesRemaining--;
+        movesText.text = movesRemaining.ToString();
+        hsm.Go(HSM.State.Remove_Items);
+    }
+    void ToInvalid()
+    {
+        hsm.Go(HSM.State.Idle);
+    }
+    void ToRemoveItems()
+    {
+        List<BlockBehaviour> chainList = chainMatchController.GetMatchedChain();
+        if (chainList.Count > Utils.longestChain)
+        {
+            Utils.longestChain = chainList.Count;
+            Utils.SavePref("longestChain", chainList.Count);
+            string result = string.Format("Woo hoo, This is your longest match. keep rockin");
+            StartCoroutine(SetMessage(result, 3.0f));
+        }
 
-    public void ToValidateBoard()
+        float delay = 0;
+        foreach (BlockBehaviour blk in chainList)
+        {
+            levelData[blk.info.Id] = 0;
+            delay += 0.1f;
+            StartCoroutine(Disappear(blk, delay));
+        }
+        StartCoroutine(MoveDown(chainList, delay));
+    }
+    public void ToFillItems()
+    {
+        AudioManager.Main.PlayNewSound("falldown");
+        List<BlockBehaviour> emptyChainList = new List<BlockBehaviour>();
+        for (int i = 0; i < blocksData.Count; i++)
+        {
+            if (levelData[i] == 0)
+            {
+                emptyChainList.Add(blocksData[i]);
+                blocksData[i].UpdatePosition(-10);
+                levelData[i] = Utils.GetValidGem();
+                blocksData[i].SetGem(levelData[i]);
+                blocksData[i].GetIntoPosition();
+            }
+        }
+        hsm.Go(HSM.State.Validate_Board);
+    }
+    void ToValidateBoard()
     {
         for (int i = 0; i < levelData.Count; i++)
         {
             int row = 0, col = 0, count = 0;
             Utils.GetRowCol(i, out row, out col);
-            ChainCount(row, col,levelData[i], ref count);
+            ChainCount(row, col, levelData[i], ref count);
             if (count > 2)
             {
-                hsm.Go(State.Idle);
+                hsm.Go(HSM.State.Idle);
                 return;
             }
         }
-        hsm.Go(State.Shuffle_Board);
+        hsm.Go(HSM.State.Shuffle_Board);
     }
-    public void ToShuffleBoard()
+    void ToShuffleBoard()
     {
         ReGenerate();
-        hsm.Go(State.Validate_Board);
+        hsm.Go(HSM.State.Validate_Board);
     }
-    public void GotoMenu()
+    void ToEndGame()
+    {
+        if (score > Utils.highScore)
+        {
+            Utils.highScore = score;
+            Utils.SavePref("highScore", score);
+        }
+        StartCoroutine(PlayEndGame());
+    }
+    void GotoMenu()
     {
         SceneManager.LoadScene("menu");
     }
+#endregion
 }

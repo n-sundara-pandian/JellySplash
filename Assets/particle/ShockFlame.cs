@@ -22,7 +22,7 @@ public class ShockFlame : MonoBehaviour {
                 SetColor(Color.yellow);
                 break;
             case 5:
-                SetColor(Color.blue);
+                SetColor(Color.white);
                 break;
 
         }

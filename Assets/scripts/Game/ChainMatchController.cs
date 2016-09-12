@@ -1,17 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using thelab.mvc;
+using Vectrosity;
 
-public class ChainMatchController : MonoBehaviour {
+public class ChainMatchController : Controller<Game> {
 
-    public LevelLayout levelManager;
-    public LineRenderer Line;
-
-    private List<Vector3> pointsList = new List<Vector3>();
+    //public LevelLayout levelManager;
+    public List<BlockBehaviour> chainList = new List<BlockBehaviour>();
+	private List<Vector3> pointsList3d = new List<Vector3>();
+	VectorLine vLine = null;// = new VectorLine ("3dLine", pointsList, 1.0f);
     private LayerMask LayerMask = UnityEngine.Physics.DefaultRaycastLayers;
-    private List<BlockBehaviour> chainList = new List<BlockBehaviour>();
     private BlockBehaviour lastBlock = null;
     private Lean.LeanFinger draggingFinger;
+	void Start()
+	{
+		vLine = new VectorLine ("3dLine", pointsList3d, 5.0f, LineType.Continuous, Joins.Fill);
+		vLine.color = Color.grey;
+	}
 
     protected virtual void OnEnable()
     {
@@ -70,9 +76,7 @@ public class ChainMatchController : MonoBehaviour {
             {
                 if (block.info.Id == chainList[chainList.Count - 2].info.Id)
                 {
-                    pointsList.Remove(pointsList[pointsList.Count - 1]);
-                    Line.SetVertexCount(pointsList.Count);
-                    Line.SetPosition(pointsList.Count - 1, pointsList[pointsList.Count - 1]);
+					pointsList3d.Remove(pointsList3d[pointsList3d.Count - 1]);
                     lastBlock.SelectBlock(false);
                     chainList.Remove(lastBlock);
                     lastBlock = chainList[chainList.Count - 1];
@@ -81,27 +85,24 @@ public class ChainMatchController : MonoBehaviour {
             }
             else
             {
-                pointsList.Add(block.transform.position);
-                Line.SetVertexCount(pointsList.Count);
-                Line.SetPosition(pointsList.Count - 1, pointsList[pointsList.Count - 1]);
+				pointsList3d.Add(block.transform.position);
                 chainList.Add(block);
                 lastBlock = block;
                 block.SelectBlock(true);
                 AudioManager.Main.PlayNewSound("select");
             }
         }
-
+		vLine.Draw3DAuto ();
     }
 
     public void OnFingerDown(Lean.LeanFinger finger)
     {
         if (draggingFinger != null && finger != draggingFinger)
             return;
-        if (levelManager.hsm.GetCurrentState() != LevelLayout.State.Idle)
+        if (app.controller.hsm.GetCurrentState() != HSM.State.Idle)
             return;
         chainList.Clear();
-        pointsList.Clear();
-        Line.SetWidth(10, 10);
+        pointsList3d.Clear();
         var ray = finger.GetRay();
         var hit = default(RaycastHit);
         // Was this finger pressed down on a collider?
@@ -133,13 +134,12 @@ public class ChainMatchController : MonoBehaviour {
         {
             block.SelectBlock(false);
         }
-        pointsList.Clear();
-        Line.SetVertexCount(0);
+		pointsList3d.Clear ();
         if (chainList.Count >= 3)
-            levelManager.hsm.Go(LevelLayout.State.Valid_match);
+            app.controller.hsm.Go(HSM.State.Valid_match);
         else
         {
-            levelManager.hsm.Go(LevelLayout.State.Invalid_Match);
+            app.controller.hsm.Go(HSM.State.Invalid_Match);
             AudioManager.Main.PlayNewSound("deselect");
         }
     }

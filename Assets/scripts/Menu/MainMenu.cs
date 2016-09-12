@@ -21,6 +21,11 @@ public class MainMenu : MonoBehaviour {
         blockPool = EZObjectPool.CreateObjectPool(block.gameObject, "Blocks", (int)LRSlider.maxValue * (int)UDSlider.maxValue, true, true, false);
         Invoke("StartLater", 0.5f);
     }
+    void Init()
+    {
+        LRSlider.value = Utils.width;
+        UDSlider.value = Utils.height;
+    }
     void StartLater()
     {
         Init();
@@ -40,11 +45,6 @@ public class MainMenu : MonoBehaviour {
         currentText = currentText % statusMsgs.Count;
         Invoke("ChangeStatusText", Random.Range(5, 12));
     }
-    void Init()
-    {
-        LRSlider.value = Utils.width;
-        UDSlider.value = Utils.height;
-    }
 
     public void OnWidthSelect()
     {
@@ -59,6 +59,6 @@ public class MainMenu : MonoBehaviour {
     }
     public void OnStartGame()
     {
-        SceneManager.LoadScene("game");
+        SceneManager.LoadScene("mvc");
     }
 }

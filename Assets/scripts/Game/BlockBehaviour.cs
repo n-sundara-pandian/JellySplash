@@ -62,6 +62,13 @@ public class BlockBehaviour : MonoBehaviour {
         SetGem(info.GemType);
         GetIntoPosition();
     }
+	public void SetupTile(Vector3 off,BlockInfo binfo)
+	{
+		offset = off;
+		info = binfo;
+		block.localScale = new Vector3(binfo.Size, binfo.Size, binfo.Size);
+		GetIntoPosition();
+	}
     public void SelectBlock(bool flag)
     {
         if (flag)
@@ -80,6 +87,8 @@ public class BlockBehaviour : MonoBehaviour {
         BlockInfo binfo = other.info;
         if (info.GemType != binfo.GemType)
             return false;
+		if (info.GemType == 0)
+			return false;
         int xDiff = Mathf.Abs(info.col - binfo.col);
         int yDiff = Mathf.Abs(info.row - binfo.row);
         if (xDiff == yDiff && xDiff == 0)
