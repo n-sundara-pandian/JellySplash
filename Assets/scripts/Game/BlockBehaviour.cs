@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using DG.Tweening;
-
-public class BlockBehaviour : MonoBehaviour {
+using thelab.mvc;
+public class BlockBehaviour :  View<Game> {
     public struct BlockInfo
     {
         public int GemType;
@@ -15,7 +15,7 @@ public class BlockBehaviour : MonoBehaviour {
     public BlockAnimator Gfx;
     public BlockInfo info;
     public TextMesh text;
-    public float shakeDegree = 10.0f;
+    public float shakeDegree = 100.0f;
     float fallTime = 0.25f;
     Vector3 offset;
     public int moveDown = 0;
@@ -45,7 +45,10 @@ public class BlockBehaviour : MonoBehaviour {
     public void SetGem(int gemno)
     {
         info.GemType = gemno;
-        Gfx.SetGem(info.GemType);
+		if (gemno >= 0)
+			Gfx.SetGem(app.view.GemList[info.GemType], app.view.HighlightList[info.GemType]);
+		else
+			Gfx.SetGem(app.view.GemList[0], app.view.GemList[0]);
         text.text = info.Id.ToString();
     }
 
@@ -75,11 +78,13 @@ public class BlockBehaviour : MonoBehaviour {
         {
             block.transform.DORotate(Vector3.forward * -shakeDegree, 0.1f);
             block.transform.DORotate(Vector3.forward * shakeDegree, 0.25f).SetLoops(-1, LoopType.Yoyo).SetDelay(0.1f);
+			Gfx.HighLight ();
         }
         else
         {
             block.transform.DOKill(true);
             block.transform.DORotate(Vector3.zero, 0.1f);
+			Gfx.Normal ();
         }
     }
     public bool IsValidNeighbour(BlockBehaviour other)
@@ -99,4 +104,8 @@ public class BlockBehaviour : MonoBehaviour {
             return true;
         return false;
     }
+	public bool IsValidGem()
+	{
+		return (info.GemType > 0);
+	}
 }

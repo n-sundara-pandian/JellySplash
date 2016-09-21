@@ -12,6 +12,7 @@ public class GameView : View<Game> {
 	public GameObject tile;
     public GameObject particle;
     public Text scoreText;
+	public Text curMoveScoreText;
     public Text movesText;
     public Image resultImage;
     public Text resultText;
@@ -28,6 +29,10 @@ public class GameView : View<Game> {
 	public bool warned = false;
     public bool congradulated = false;
     bool msgBoxBusy = false;
+
+	public Sprite[] GemList;
+	public Sprite[] HighlightList;
+
     void Start()
     {
         resultImage.transform.DOMoveX(2000, 0.1f);
@@ -218,12 +223,16 @@ public class GameView : View<Game> {
 
     public void SetValue(string key, int val)
     {
-        if (key == "score")
-            scoreText.text = val.ToString();
+		if (key == "score")
+			scoreText.text = val.ToString ();
+		else if (key == "curscore") {
+			if (val >= 300)
+				curMoveScoreText.text = val.ToString ();
+			else
+				curMoveScoreText.text = "";
+		}
         else if (key == "move")
-        {
             movesText.text = val.ToString();
-        }
     }
     public void EndGame(int moves, int score)
     {

@@ -152,7 +152,7 @@ Animator:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 182338}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 0057cb2ddab95df4bb5872ce40b8f638, type: 2}
   m_CullingMode: 0
@@ -211,6 +211,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockAnimator: {fileID: 9569888}
+  sprite: {fileID: 21220398}
 --- !u!212 &21220398
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -70,6 +70,8 @@ public class ChainMatchController : Controller<Game> {
         BlockBehaviour block = parentObj.GetComponent<BlockBehaviour>();
         if (block == null)
             return;
+		if (!block.IsValidGem ())
+			return;
         if (lastBlock == null || lastBlock.IsValidNeighbour(block))
         {
             if (chainList.Find(x => x.info.Id == block.info.Id))
@@ -92,6 +94,7 @@ public class ChainMatchController : Controller<Game> {
                 AudioManager.Main.PlayNewSound("select");
             }
         }
+		app.view.SetValue ("curscore", app.model.GetScoreForBlockCount (chainList.Count));
 		vLine.Draw3DAuto ();
     }
 
@@ -140,8 +143,10 @@ public class ChainMatchController : Controller<Game> {
         else
         {
             app.controller.hsm.Go(HSM.State.Invalid_Match);
+			if (chainList.Count > 0)
             AudioManager.Main.PlayNewSound("deselect");
         }
+		app.view.SetValue ("curscore", app.model.GetScoreForBlockCount (0));
     }
 
     public List<BlockBehaviour> GetMatchedChain()

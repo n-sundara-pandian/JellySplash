@@ -1,0 +1,12 @@
+﻿<Properties StartupItem="DOTween.dll">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\scripts\Game\ChainMatchController.cs">
+    <Files>
+      <File FileName="..\..\scripts\Game\ChainMatchController.cs" Line="97" Column="6" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

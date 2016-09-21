@@ -15,7 +15,7 @@ public class GameModel : Model<Game> {
     private int highscore = 0;
     private int longstreak = 0;
     private int movesRemaining = 20;
-    private int totalMoves = 6;
+    private int totalMoves = 20;
     private int multiplier = 50;
 	private LevelData levels = new LevelData();
     private List<int> levelData = new List<int>();
@@ -24,9 +24,18 @@ public class GameModel : Model<Game> {
     {
         return movesRemaining;
     }
+	public int GetScoreForBlockCount(int index)
+	{
+		int result = 0;
+		for (int i = 1; i <= index; i++)
+		{
+			result += i * multiplier;
+		}
+		return result;
+	}
     public void AddScore(int index)
     {
-        score += (index * multiplier);
+		score += index * multiplier;
         if (score > highscore)
         {
             highscore = score;
