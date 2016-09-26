@@ -8,7 +8,7 @@ public class Utils : MonoBehaviour {
     public static int height;
     public static int highScore;
     public static int longestChain;
-	public static int current_level = 3;
+	public static int current_level = 0;
     public static int GetID(int row, int col)
     {
         return row * width + col;

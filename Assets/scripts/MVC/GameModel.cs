@@ -20,6 +20,7 @@ public class GameModel : Model<Game> {
 	private LevelData levels = new LevelData();
     private List<int> levelData = new List<int>();
     public List<int> GetBoard() { return levelData; }
+	public List<int> floodFillItemList = new List<int>();
     public int GetRemainingMoves()
     {
         return movesRemaining;
@@ -103,23 +104,36 @@ public class GameModel : Model<Game> {
     {
         levelData[id] = val;
     }
-    void ChainCount(int row, int col, long old, ref int count)
+	void ChainCount(int row, int col, long old, bool breakOnValid, ref int count)
     {
         if ((row < 0) || (row >= Utils.height)) return;
         if ((col < 0) || (col >= Utils.width)) return;
-        if (count > 2) return;
-        int id = Utils.GetID(row, col);
+		int id = Utils.GetID(row, col);
+		if (levelData [id] != old)
+			return;
+		if (breakOnValid && count > 2) return;
         if (levelData[id] == old)
         {
-            count++;
-            ChainCount(row + 1, col, old, ref count);
-            ChainCount(row - 1, col, old, ref count);
-            ChainCount(row, col + 1, old, ref count);
-            ChainCount(row, col - 1, old, ref count);
-            ChainCount(row + 1, col + 1, old, ref count);
-            ChainCount(row + 1, col - 1, old, ref count);
-            ChainCount(row - 1, col + 1, old, ref count);
-            ChainCount(row - 1, col - 1, old, ref count);
+			bool found = false;
+			foreach (int item in floodFillItemList) {
+				if (item == id) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				floodFillItemList.Add (id);
+				count++;
+			} else
+				return;
+			ChainCount(row + 1, col, old, breakOnValid, ref count);
+			ChainCount(row - 1, col, old, breakOnValid, ref count);
+			ChainCount(row, col + 1, old, breakOnValid, ref count);
+			ChainCount(row, col - 1, old, breakOnValid, ref count);
+			ChainCount(row + 1, col + 1, old, breakOnValid, ref count);
+			ChainCount(row + 1, col - 1, old, breakOnValid, ref count);
+			ChainCount(row - 1, col + 1, old, breakOnValid, ref count);
+			ChainCount(row - 1, col - 1, old, breakOnValid, ref count);
         }
     }
 
@@ -144,7 +158,7 @@ public class GameModel : Model<Game> {
         {
             int row = 0, col = 0, count = 0;
             Utils.GetRowCol(i, out row, out col);
-            ChainCount(row, col, levelData[i], ref count);
+			ChainCount(row, col, levelData[i], true, ref count);
             if (count > 2)
             {
                 return true;
@@ -163,5 +177,12 @@ public class GameModel : Model<Game> {
         }
 
     }
+	public void FloodFill(int tile)
+	{
+		floodFillItemList.Clear ();
+		int row = 0, col = 0, count = 0;
+		Utils.GetRowCol(tile, out row, out col);
+		ChainCount(row, col, levelData[tile], false, ref count);
+	}
 
 }

@@ -238,4 +238,12 @@ public class GameView : View<Game> {
     {
         StartCoroutine(PlayEndGame(moves, score));
     }
+	public BlockBehaviour GetBlockForID(int id)
+	{
+		for (int i = 0; id < blocksData.Count; i++) {
+			if (blocksData [i].info.Id == id)
+				return blocksData [i];
+		}
+		return null;	
+	}
 }

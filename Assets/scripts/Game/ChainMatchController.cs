@@ -26,6 +26,7 @@ public class ChainMatchController : Controller<Game> {
 
         // Hook into the OnFingerUp event
         Lean.LeanTouch.OnFingerUp += OnFingerUp;
+		Lean.LeanTouch.OnFingerHeldSet += OnFingerHeldSet;
     }
 
     protected virtual void OnDisable()
@@ -97,7 +98,27 @@ public class ChainMatchController : Controller<Game> {
 		app.view.SetValue ("curscore", app.model.GetScoreForBlockCount (chainList.Count));
 		vLine.Draw3DAuto ();
     }
-
+	public void OnFingerHeldSet(Lean.LeanFinger finger)
+	{
+		if (app.controller.hsm.GetCurrentState() != HSM.State.Idle)
+			return;
+		if (chainList.Count != 0)
+			return;
+		//pointsList3d.Clear();
+		var ray = finger.GetRay();
+		var hit = default(RaycastHit);
+		// Was this finger pressed down on a collider?
+		if (Physics.Raycast(ray, out hit, float.PositiveInfinity, LayerMask) == true)
+		{
+			// Was that collider this one?
+			if (hit.collider.CompareTag("block"))
+			{
+				// Set the current finger to this one
+			//	draggingFinger = finger;
+				AddBlock(hit);
+			}
+		}
+	}
     public void OnFingerDown(Lean.LeanFinger finger)
     {
         if (draggingFinger != null && finger != draggingFinger)
@@ -128,17 +149,20 @@ public class ChainMatchController : Controller<Game> {
         {
             return;
         }
+		if (app.controller.hsm.GetCurrentState() != HSM.State.Idle)
+			return;
             // Unset the current finger
-            draggingFinger = null;
-            lastBlock = null;
-        
-        lastBlock = null;
+      
         foreach (BlockBehaviour block in chainList)
         {
             block.SelectBlock(false);
         }
 		pointsList3d.Clear ();
-        if (chainList.Count >= 3)
+		if (chainList.Count == 1) {
+			app.controller.hsm.Go(HSM.State.FloodFill);
+
+		}
+        else if (chainList.Count >= 3)
             app.controller.hsm.Go(HSM.State.Valid_match);
         else
         {
@@ -147,10 +171,21 @@ public class ChainMatchController : Controller<Game> {
             AudioManager.Main.PlayNewSound("deselect");
         }
 		app.view.SetValue ("curscore", app.model.GetScoreForBlockCount (0));
+		draggingFinger = null;
+		lastBlock = null;
     }
 
     public List<BlockBehaviour> GetMatchedChain()
     {
         return chainList;
     }
+	public int GetLastBlockID()
+	{
+		return chainList[chainList.Count - 1].info.Id;
+	}
+	public void Reset()
+	{
+		lastBlock = null;
+		chainList.Clear ();
+	}
 }

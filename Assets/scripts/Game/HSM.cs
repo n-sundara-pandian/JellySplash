@@ -17,6 +17,7 @@ public class HSM : MonoBehaviour {
         Shuffle_Board,
         EndGame,
         GotoMenu,
+		FloodFill,
     };
 
     Dictionary<KeyValuePair<State, State>, Action> TransitionMap = new Dictionary<KeyValuePair<State, State>, Action>();

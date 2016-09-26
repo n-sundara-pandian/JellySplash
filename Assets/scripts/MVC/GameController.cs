@@ -33,6 +33,9 @@ public class GameController : Controller<Game> {
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.Validate_Board), ToValidateBoard);
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.EndGame), ToEndGame);
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.EndGame, HSM.State.GotoMenu), GotoMenu);
+		hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.FloodFill), ToFloodFill);
+		hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.FloodFill, HSM.State.Valid_match), ToValidMatch);
+		hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.FloodFill, HSM.State.Invalid_Match), ToInvalid);
     }
 
     public override void OnNotification(string p_event, Object p_target, params object[] p_data)
@@ -77,6 +80,7 @@ public class GameController : Controller<Game> {
     }
     void ToIdle()
     {
+		Assert<ChainMatchController>(matchController).Reset ();
         app.view.SetValue("move", app.model.GetRemainingMoves());
         if (app.model.GetRemainingMoves() <= 0)
         {
@@ -91,6 +95,23 @@ public class GameController : Controller<Game> {
             }
         }
     }
+	void ToFloodFill()
+	{
+		int  lastBlockId = Assert<ChainMatchController>(matchController).GetLastBlockID();
+	
+		app.model.FloodFill (lastBlockId);
+		if (app.model.floodFillItemList.Count > 2) 
+		{
+			Assert<ChainMatchController>(matchController).chainList.Clear ();
+			for (int i = 0; i < app.model.floodFillItemList.Count; i++) {
+				Assert<ChainMatchController>(matchController).chainList.Add (app.view.GetBlockForID (app.model.floodFillItemList[i]));
+			}
+			hsm.Go (HSM.State.Valid_match);
+		}
+		else
+			hsm.Go (HSM.State.Invalid_Match);
+
+	}
     void ToValidMatch()
     {
         app.model.DecMoves();
