@@ -22,10 +22,7 @@ public class GameModel : Model<Game> {
     public List<int> GetBoard() { return levelData; }
 	public List<int> floodFillItemList = new List<int>();
 	public GamePlayController gamePlayController;
-	public bool IsGameOver()
-	{
-		return gamePlayController.GameOver ();
-	}
+
     public int GetRemainingMoves()
     {
 		return gamePlayController.GetRemainingSteps();
@@ -59,7 +56,8 @@ public class GameModel : Model<Game> {
     public void DecMoves()
     {
         //movesRemaining--;
-		gamePlayController.tick();
+		if (gamePlayController != null)
+			gamePlayController.tick();
     }
     public void SetStreak(int streak)
     {
@@ -83,7 +81,7 @@ public class GameModel : Model<Game> {
 		GameObject temp = GameObject.Instantiate (Resources.Load ("MovesLogic")) as GameObject;
 		gamePlayController = temp.GetComponent<GamePlayController> ();
 		Dictionary<string, int> param = new Dictionary<string, int> ();
-		param.Add ("moves", 2);
+		param.Add ("moves", 7);
 		gamePlayController.init (param);
     }
     public void Shrink()

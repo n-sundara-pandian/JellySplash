@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameController : Controller<Game> {
     public HSM hsm;
     private ChainMatchController matchController;
+	bool GameOver = false;
     void Start()
     {
         Invoke("StartLater", 0.5f);
@@ -16,6 +17,7 @@ public class GameController : Controller<Game> {
     {
         InitStateMap();
         hsm.Go(HSM.State.Init);
+		GameOver = false;
     }
     void InitStateMap()
     {
@@ -69,6 +71,25 @@ public class GameController : Controller<Game> {
                     Utils.SavePref("highScore", (int)p_data[0]);
                     break;
                 }
+		case "controller.tick":
+			{
+				app.view.SetValue("move", app.model.GetRemainingMoves());
+				break;
+			}
+		case "controller.gameover":
+			{
+				GameOver = true;
+				break;
+			}
+		case "controller.warn":
+			{
+				if(!app.view.warned)
+				{
+					app.view.ShowMessage(" 5 Moves Remaining", 3.0f);
+					app.view.warned = true;
+				}
+				break;
+			}
         }
     }
     void ToInitBoard()
@@ -81,19 +102,8 @@ public class GameController : Controller<Game> {
     void ToIdle()
     {
 		Assert<ChainMatchController>(matchController).Reset ();
-        app.view.SetValue("move", app.model.GetRemainingMoves());
-        if (app.model.GetRemainingMoves() <= 0)
-        {
-            hsm.Go(HSM.State.EndGame);
-        }
-        else if (app.model.GetRemainingMoves() == 5)
-        {
-            if(!app.view.warned)
-            {
-                app.view.ShowMessage(" 5 Moves Remaining", 3.0f);
-                app.view.warned = true;
-            }
-        }
+		if (GameOver)
+			hsm.Go(HSM.State.EndGame);		
     }
 	void ToFloodFill()
 	{
@@ -164,5 +174,4 @@ public class GameController : Controller<Game> {
     {
         SceneManager.LoadScene("menu");
     }
-
 }
