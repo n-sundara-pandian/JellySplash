@@ -26,7 +26,6 @@ public class ChainMatchController : Controller<Game> {
 
         // Hook into the OnFingerUp event
         Lean.LeanTouch.OnFingerUp += OnFingerUp;
-		Lean.LeanTouch.OnFingerHeldSet += OnFingerHeldSet;
     }
 
     protected virtual void OnDisable()
@@ -98,27 +97,6 @@ public class ChainMatchController : Controller<Game> {
 		app.view.SetValue ("curscore", app.model.GetScoreForBlockCount (chainList.Count));
 		vLine.Draw3DAuto ();
     }
-	public void OnFingerHeldSet(Lean.LeanFinger finger)
-	{
-		if (app.controller.hsm.GetCurrentState() != HSM.State.Idle)
-			return;
-		if (chainList.Count != 0)
-			return;
-		//pointsList3d.Clear();
-		var ray = finger.GetRay();
-		var hit = default(RaycastHit);
-		// Was this finger pressed down on a collider?
-		if (Physics.Raycast(ray, out hit, float.PositiveInfinity, LayerMask) == true)
-		{
-			// Was that collider this one?
-			if (hit.collider.CompareTag("block"))
-			{
-				// Set the current finger to this one
-			//	draggingFinger = finger;
-				AddBlock(hit);
-			}
-		}
-	}
     public void OnFingerDown(Lean.LeanFinger finger)
     {
         if (draggingFinger != null && finger != draggingFinger)

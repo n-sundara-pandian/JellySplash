@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public class GameModel : Model<Game> {
 	public class LevelData
 	{
+		public int rows;
+		public int cols;
 		public int []tiles;
 		public int targetScore;
 		public int moves;
@@ -14,16 +16,19 @@ public class GameModel : Model<Game> {
     private int score = 0;
     private int highscore = 0;
     private int longstreak = 0;
-    private int movesRemaining = 20;
-    private int totalMoves = 20;
     private int multiplier = 50;
 	private LevelData levels = new LevelData();
     private List<int> levelData = new List<int>();
     public List<int> GetBoard() { return levelData; }
 	public List<int> floodFillItemList = new List<int>();
+	public GamePlayController gamePlayController;
+	public bool IsGameOver()
+	{
+		return gamePlayController.GameOver ();
+	}
     public int GetRemainingMoves()
     {
-        return movesRemaining;
+		return gamePlayController.GetRemainingSteps();
     }
 	public int GetScoreForBlockCount(int index)
 	{
@@ -49,11 +54,12 @@ public class GameModel : Model<Game> {
     }
     public int GetTotalMoves()
     {
-        return totalMoves;
+		return gamePlayController.GetTotalMoves();
     }
     public void DecMoves()
     {
-        movesRemaining--;
+        //movesRemaining--;
+		gamePlayController.tick();
     }
     public void SetStreak(int streak)
     {
@@ -65,13 +71,20 @@ public class GameModel : Model<Game> {
     }
     public void Init(int high, int streak)
     {
-        movesRemaining = totalMoves;
+       // movesRemaining = totalMoves;
         score = 0;
         highscore = high;
         longstreak = streak;
 		string current_level = "Levels/Level_" + Utils.current_level;
 		TextAsset lvl = Resources.Load<TextAsset>(current_level);
 		levels = JsonUtility.FromJson<LevelData> (lvl.text);
+		Utils.width = levels.cols;
+		Utils.height = levels.rows;
+		GameObject temp = GameObject.Instantiate (Resources.Load ("MovesLogic")) as GameObject;
+		gamePlayController = temp.GetComponent<GamePlayController> ();
+		Dictionary<string, int> param = new Dictionary<string, int> ();
+		param.Add ("moves", 2);
+		gamePlayController.init (param);
     }
     public void Shrink()
     {
