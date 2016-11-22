@@ -13,16 +13,16 @@ public class ShockFlame : MonoBehaviour {
                 SetColor(Color.red);
                 break;
             case 2:
-                SetColor(Color.green);
-                break;
-            case 3:
                 SetColor(Color.blue);
                 break;
+            case 3:
+                SetColor(Color.white);
+                break;
             case 4:
-                SetColor(Color.yellow);
+                SetColor(Color.green);
                 break;
             case 5:
-                SetColor(Color.white);
+                SetColor(Color.yellow);
                 break;
 
         }

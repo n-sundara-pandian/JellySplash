@@ -15,8 +15,8 @@ public class ChainMatchController : Controller<Game> {
     private Lean.LeanFinger draggingFinger;
 	void Start()
 	{
-		vLine = new VectorLine ("3dLine", pointsList3d, 5.0f, LineType.Continuous, Joins.Fill);
-		vLine.color = Color.grey;
+		vLine = new VectorLine ("3dLine", pointsList3d, Utils.imgSize * 0.2f, LineType.Continuous, Joins.Fill);
+		vLine.color = Color.yellow;
 	}
 
     protected virtual void OnEnable()
@@ -137,7 +137,7 @@ public class ChainMatchController : Controller<Game> {
         }
 		pointsList3d.Clear ();
 		if (chainList.Count == 1) {
-			app.controller.hsm.Go(HSM.State.FloodFill);
+		//	app.controller.hsm.Go(HSM.State.FloodFill);
 
 		}
         else if (chainList.Count >= 3)

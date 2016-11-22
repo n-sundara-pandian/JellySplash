@@ -12,12 +12,13 @@ public class GameModel : Model<Game> {
 		public int []tiles;
 		public int targetScore;
 		public int moves;
+        public int timer;
 	}
     private int score = 0;
     private int highscore = 0;
     private int longstreak = 0;
     private int multiplier = 50;
-	private LevelData levels = new LevelData();
+	public LevelData levels = new LevelData();
     private List<int> levelData = new List<int>();
     public List<int> GetBoard() { return levelData; }
 	public List<int> floodFillItemList = new List<int>();
@@ -53,6 +54,11 @@ public class GameModel : Model<Game> {
     {
 		return gamePlayController.GetTotalMoves();
     }
+    public void Update()
+    {
+        if (gamePlayController != null)
+            gamePlayController.tick();
+    }
     public void DecMoves()
     {
         //movesRemaining--;
@@ -73,16 +79,35 @@ public class GameModel : Model<Game> {
         score = 0;
         highscore = high;
         longstreak = streak;
-		string current_level = "Levels/Level_" + Utils.current_level;
+        int cur_level = Random.Range(0, 4);
+		string current_level = "Levels/Level_" + cur_level;
 		TextAsset lvl = Resources.Load<TextAsset>(current_level);
 		levels = JsonUtility.FromJson<LevelData> (lvl.text);
 		Utils.width = levels.cols;
 		Utils.height = levels.rows;
-		GameObject temp = GameObject.Instantiate (Resources.Load ("MovesLogic")) as GameObject;
-		gamePlayController = temp.GetComponent<GamePlayController> ();
-		Dictionary<string, int> param = new Dictionary<string, int> ();
-		param.Add ("moves", 7);
-		gamePlayController.init (param);
+        for (int i = 0; i < levels.cols * levels.rows; i++)
+            levelData.Add(-1);
+        if (levels.timer != 0) InitGameplayController("timer");
+        else if (levels.moves != 0) InitGameplayController("moves");
+    }
+    void InitGameplayController(string type)
+    {
+        if (type == "timer")
+        {
+            GameObject temp = GameObject.Instantiate(Resources.Load("TimerLogic")) as GameObject;
+            gamePlayController = temp.GetComponent<GamePlayController>();
+            Dictionary<string, int> param = new Dictionary<string, int>();
+            param.Add("timer", levels.timer);
+            gamePlayController.init(param);
+        }
+        else if (type == "moves")
+        {
+            GameObject temp = GameObject.Instantiate(Resources.Load("MovesLogic")) as GameObject;
+            gamePlayController = temp.GetComponent<GamePlayController>();
+            Dictionary<string, int> param = new Dictionary<string, int>();
+            param.Add("moves", levels.moves);
+            gamePlayController.init(param);
+        }
     }
     public void Shrink()
     {
@@ -155,10 +180,14 @@ public class GameModel : Model<Game> {
         {
             for (int col = 0; col < Utils.width; col++)
             {
-				if(levels.tiles[Utils.GetID(row, col)] == 1)
-                	levelData.Add(Utils.GetValidGem());
-				else
-					levelData.Add(-1);
+                if (levels.tiles[Utils.GetID(row, col)] == 1)
+                {
+                    levelData[Utils.GetID(row, col)] = Utils.GetValidGem();
+                }
+                else
+                {
+                    levelData[Utils.GetID(row, col)] = -1;
+                }
             }
         }
     }
@@ -167,6 +196,7 @@ public class GameModel : Model<Game> {
     {
         for (int i = 0; i < levelData.Count; i++)
         {
+            floodFillItemList.Clear();
             int row = 0, col = 0, count = 0;
             Utils.GetRowCol(i, out row, out col);
 			ChainCount(row, col, levelData[i], true, ref count);
@@ -195,5 +225,9 @@ public class GameModel : Model<Game> {
 		Utils.GetRowCol(tile, out row, out col);
 		ChainCount(row, col, levelData[tile], false, ref count);
 	}
+    public bool IsTargetAchieved()
+    {
+        return score >= levels.targetScore;
+    }
 
 }

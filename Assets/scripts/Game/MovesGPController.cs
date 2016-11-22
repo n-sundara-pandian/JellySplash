@@ -24,6 +24,6 @@ public class MovesGPController : GamePlayController
 	}
 	public override int GetRemainingSteps (){return RemainingSteps;}
 	public override int GetTotalMoves() { return TotalMoves;}
-	public override void Pause() {}
-	public override void Resume() {}
+	public override void Pause(float delay) {}
+	public override void Resume(float delay) {}
 }

@@ -15,7 +15,7 @@ public abstract class GamePlayController : Controller<Game>, IGameCondition {
 	public abstract void tick ();
 	public abstract int GetRemainingSteps ();
 	public abstract int GetTotalMoves ();
-	public abstract void Pause();
-	public abstract void Resume ();
+	public abstract void Pause(float delay);
+	public abstract void Resume (float delay);
 }
 

@@ -8,7 +8,8 @@ public class Utils : MonoBehaviour {
     public static int height;
     public static int highScore;
     public static int longestChain;
-	public static int current_level = 0;
+    public static int imgSize = 100;
+	//public static int current_level = 0;
     public static int GetID(int row, int col)
     {
         return row * width + col;
@@ -47,6 +48,7 @@ public class Utils : MonoBehaviour {
         float totalAvailableWidth = Mathf.Abs(TL.x - BR.x);
         float totalAvailableHeight = Mathf.Abs(TL.y - BR.y);
         int suggested_img_size = min_img_size;
+        imgSize = min_img_size;
         for (int i = min_img_size; i < max_img_size; i++)
         {
             suggested_img_size = i;

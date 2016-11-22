@@ -72,10 +72,19 @@ public class GameController : Controller<Game> {
                     break;
                 }
 		case "controller.tick":
-			{
-				app.view.SetValue("move", app.model.GetRemainingMoves());
-				break;
-			}
+                {
+                    app.view.SetValue("move", app.model.GetRemainingMoves());
+                    break;
+                }
+            case "timerup":
+                {
+                    GameOver = true;
+                    if (hsm.GetCurrentState() == HSM.State.Idle)
+                    {
+                        hsm.Go(HSM.State.EndGame);
+                    }
+                    break;
+                }
 		case "controller.gameover":
 			{
 				GameOver = true;
@@ -85,11 +94,23 @@ public class GameController : Controller<Game> {
 			{
 				if(!app.view.warned)
 				{
-					app.view.ShowMessage(" 5 Moves Remaining", 3.0f);
+				//	app.view.ShowMessage(" 5 Seconds Remaining", 3.0f);
 					app.view.warned = true;
 				}
 				break;
 			}
+            case "show.wincondition":
+                {
+                    string message = string.Format(" Score {1} points in {0} Seconds", app.model.levels.timer, app.model.levels.targetScore);
+                    app.view.ShowMessage(message, 2.0f);
+                    app.model.gamePlayController.Pause(0.5f);
+                    break;
+                }
+        case "contoller.summary":
+            {
+                
+                break;
+            }
         }
     }
     void ToInitBoard()
@@ -141,11 +162,11 @@ public class GameController : Controller<Game> {
             app.model.SetValue(blk.info.Id, 0);
             app.model.AddScore(count);
             app.view.SetValue("score", app.model.GetScore());
-            app.view.HideItem(blk, (float)count * 0.25f);
+            app.view.HideItem(blk, (float)count * 0.1f);
             count++;
         }
         app.model.SetStreak(count);
-        app.view.FallDown(app.model.GetBoard(), chainList, count * 0.25f);
+        app.view.FallDown(app.model.GetBoard(), chainList, count * 0.1f);
         app.model.Shrink();
     }
     public void ToFillItems()
@@ -168,10 +189,22 @@ public class GameController : Controller<Game> {
     }
     void ToEndGame()
     {
-        app.view.EndGame(app.model.GetTotalMoves(), app.model.GetScore());
+        if (app.model.IsTargetAchieved())
+        {
+            GotoWin();
+        }
+        else
+        {
+            app.view.LoseGame();
+        }
+        
     }
     void GotoMenu()
     {
         SceneManager.LoadScene("menu");
+    }
+    void GotoWin()
+    {
+        SceneManager.LoadScene("win");
     }
 }

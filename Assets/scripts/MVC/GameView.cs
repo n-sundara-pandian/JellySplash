@@ -234,9 +234,14 @@ public class GameView : View<Game> {
         else if (key == "move")
             movesText.text = val.ToString();
     }
-    public void EndGame(int moves, int score)
+    public void WinGame(int moves, int score)
     {
         StartCoroutine(PlayEndGame(moves, score));
+    }
+    public void LoseGame()
+    {
+        ShowMessage(" Oh No! Failed To Acheive Target. Please Try Again", 3.0f);
+        Invoke("LoadMenu", 3.0f);
     }
 	public BlockBehaviour GetBlockForID(int id)
 	{
@@ -246,4 +251,8 @@ public class GameView : View<Game> {
 		}
 		return null;	
 	}
+    void LoadMenu()
+    {
+        SceneManager.LoadScene("menu");
+    }
 }
