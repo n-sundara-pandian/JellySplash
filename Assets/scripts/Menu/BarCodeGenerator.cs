@@ -1,16 +1,19 @@
 ﻿
-using UnityEngine;  
-using System.Collections;  
-using ZXing; 
-using ZXing.QrCode;  
-using UnityEngine.UI;  
+using UnityEngine;
+using System.Collections;
+using ZXing;
+using ZXing.QrCode;
+using UnityEngine.UI;
+using System.IO;
 
 public class BarCodeGenerator : MonoBehaviour
 {
     public Texture2D barCodeTexture;
     public Texture2D qrCodeTexture;
+    public Texture2D inputTexture;
     public string Lastresult;
-
+    public Renderer webCam;
+    WebCamTexture wct;
     //public RawImage ima; 
 
     void Start()
@@ -29,7 +32,7 @@ public class BarCodeGenerator : MonoBehaviour
             barCodeTexture.SetPixels32(color32);
             barCodeTexture.Apply();
         }
-
+        StartWebCam();
     }
 
     public void SetupQRCode(string textForEncoding)
@@ -50,6 +53,60 @@ public class BarCodeGenerator : MonoBehaviour
             }
         };
         return writer.Write(textForEncoding);
+    }
+    public void BarDecode()
+    {
+        Decode(inputTexture.GetPixels32(), inputTexture.width, inputTexture.height);
+    }
+
+    void Decode(Color32[] bytes, int width, int height)
+    {
+        
+        BarcodeReader reader = new BarcodeReader { AutoRotate = true};
+        reader.Options.TryHarder = true;
+        // get texture Color32 array
+        // detect and decode the barcode inside the Color32 array
+        var result = reader.Decode(bytes, width, height);
+        // do something with the result
+        if (result != null)
+        {
+            Debug.Log(result.BarcodeFormat.ToString());
+            Debug.Log(result.Text);
+        }
+    }
+
+    IEnumerator TakePhoto()
+    {
+
+        // NOTE - you almost certainly have to do this here:
+
+        yield return new WaitForEndOfFrame();
+
+        // it's a rare case where the Unity doco is pretty clear,
+        // http://docs.unity3d.com/ScriptReference/WaitForEndOfFrame.html
+        // be sure to scroll down to the SECOND long example on that doco page 
+
+        Texture2D photo = new Texture2D(wct.width, wct.height);
+        photo.SetPixels(wct.GetPixels());
+        photo.Apply();
+        //    photo = TextureFilter.Convolution(photo, TextureFilter.SHARPEN_KERNEL, 2);
+      //  photo = TextureFilter.Grayscale(photo);
+        //Encode to a PNG
+        byte[] bytes = photo.EncodeToPNG();
+        //Write out the PNG. Of course you have to substitute your_path for something sensible
+        var filepath = Path.Combine(Application.persistentDataPath, "photo.png");
+        File.WriteAllBytes(filepath, bytes);
+        Debug.Log(filepath);
+        Decode(photo.GetPixels32(), photo.width, photo.height);
+    }
+
+    public void StartWebCam()
+    {
+        WebCamDevice[] devices = WebCamTexture.devices;
+        string deviceName = devices[1].name;
+        wct = new WebCamTexture(deviceName, 1024, 1024, 12);
+        webCam.material.mainTexture = wct;        
+        wct.Play();
     }
     private Color32[] BarEncode(BarcodeFormat fmt,string textForEncoding, int width, int height)
     {        
@@ -75,6 +132,11 @@ public class BarCodeGenerator : MonoBehaviour
         }
         return str;
     }
+    public void CaptureAndDecode()
+    {
+        StartCoroutine(TakePhoto());
+    }
+
     /*
     void OnGUI()
     {

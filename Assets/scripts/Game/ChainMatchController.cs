@@ -137,7 +137,7 @@ public class ChainMatchController : Controller<Game> {
         }
 		pointsList3d.Clear ();
 		if (chainList.Count == 1) {
-		//	app.controller.hsm.Go(HSM.State.FloodFill);
+			app.controller.hsm.Go(HSM.State.FloodFill);
 
 		}
         else if (chainList.Count >= 3)

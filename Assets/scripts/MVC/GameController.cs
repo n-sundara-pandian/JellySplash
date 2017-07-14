@@ -126,16 +126,33 @@ public class GameController : Controller<Game> {
 		if (GameOver)
 			hsm.Go(HSM.State.EndGame);		
     }
-	void ToFloodFill()
+    void ToHorizontalLine()
+    {
+        int lastBlockId = Assert<ChainMatchController>(matchController).GetLastBlockID();
+        app.model.FloodFill(lastBlockId);
+        if (app.model.FillItemList.Count > 2)
+        {
+            Assert<ChainMatchController>(matchController).chainList.Clear();
+            for (int i = 0; i < app.model.FillItemList.Count; i++)
+            {
+                Assert<ChainMatchController>(matchController).chainList.Add(app.view.GetBlockForID(app.model.FillItemList[i]));
+            }
+            hsm.Go(HSM.State.Valid_match);
+        }
+        else
+            hsm.Go(HSM.State.Invalid_Match);
+
+    }
+    void ToFloodFill()
 	{
 		int  lastBlockId = Assert<ChainMatchController>(matchController).GetLastBlockID();
 	
 		app.model.FloodFill (lastBlockId);
-		if (app.model.floodFillItemList.Count > 2) 
+		if (app.model.FillItemList.Count > 2) 
 		{
 			Assert<ChainMatchController>(matchController).chainList.Clear ();
-			for (int i = 0; i < app.model.floodFillItemList.Count; i++) {
-				Assert<ChainMatchController>(matchController).chainList.Add (app.view.GetBlockForID (app.model.floodFillItemList[i]));
+			for (int i = 0; i < app.model.FillItemList.Count; i++) {
+				Assert<ChainMatchController>(matchController).chainList.Add (app.view.GetBlockForID (app.model.FillItemList[i]));
 			}
 			hsm.Go (HSM.State.Valid_match);
 		}

@@ -21,8 +21,9 @@ public class GameModel : Model<Game> {
 	public LevelData levels = new LevelData();
     private List<int> levelData = new List<int>();
     public List<int> GetBoard() { return levelData; }
-	public List<int> floodFillItemList = new List<int>();
-	public GamePlayController gamePlayController;
+	public List<int> FillItemList = new List<int>();
+    List<int> FillTileList = new List<int>();
+    public GamePlayController gamePlayController;
 
     public int GetRemainingMoves()
     {
@@ -56,8 +57,8 @@ public class GameModel : Model<Game> {
     }
     public void Update()
     {
-        if (gamePlayController != null)
-            gamePlayController.tick();
+       // if (gamePlayController != null)
+        //    gamePlayController.tick();
     }
     public void DecMoves()
     {
@@ -140,7 +141,48 @@ public class GameModel : Model<Game> {
     {
         levelData[id] = val;
     }
-	void ChainCount(int row, int col, long old, bool breakOnValid, ref int count)
+    void LineCount(int row, int col, int dir, ref int count)
+    {
+        if ((row < 0) || (row >= Utils.height)) return;
+        if ((col < 0) || (col >= Utils.width)) return;
+        int id = Utils.GetID(row, col);
+        bool found = false;
+        foreach (int item in FillTileList)
+        {
+            if (item == id)
+                return;
+        }
+        foreach (int item in FillItemList)
+        {
+            if (item == id)
+            {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+        {
+            if (levelData[id] >= 0)
+            {
+                FillItemList.Add(id);
+                count++;
+            }
+            else
+            {
+                FillTileList.Add(id);
+            }
+        }
+        else
+            return;
+        int dr = 0;
+        int dc = 0;
+        if (dir == 0) { dr = 1; }
+        if (dir == 1) { dc = 1; }
+        LineCount(row + dr, col + dc,dir,ref count);
+        LineCount(row - dr, col - dc,dir,ref count);
+
+    }
+    void ChainCount(int row, int col, long old, bool breakOnValid, ref int count)
     {
         if ((row < 0) || (row >= Utils.height)) return;
         if ((col < 0) || (col >= Utils.width)) return;
@@ -151,14 +193,14 @@ public class GameModel : Model<Game> {
         if (levelData[id] == old)
         {
 			bool found = false;
-			foreach (int item in floodFillItemList) {
+			foreach (int item in FillItemList) {
 				if (item == id) {
 					found = true;
 					break;
 				}
 			}
 			if (!found) {
-				floodFillItemList.Add (id);
+				FillItemList.Add (id);
 				count++;
 			} else
 				return;
@@ -196,7 +238,7 @@ public class GameModel : Model<Game> {
     {
         for (int i = 0; i < levelData.Count; i++)
         {
-            floodFillItemList.Clear();
+            FillItemList.Clear();
             int row = 0, col = 0, count = 0;
             Utils.GetRowCol(i, out row, out col);
 			ChainCount(row, col, levelData[i], true, ref count);
@@ -218,13 +260,109 @@ public class GameModel : Model<Game> {
         }
 
     }
-	public void FloodFill(int tile)
+	public void FloodFill1(int tile)
 	{
-		floodFillItemList.Clear ();
+		FillItemList.Clear ();
 		int row = 0, col = 0, count = 0;
 		Utils.GetRowCol(tile, out row, out col);
 		ChainCount(row, col, levelData[tile], false, ref count);
 	}
+    public void FloodFill(int tile)
+    {
+        FillItemList.Clear();
+        FillTileList.Clear();
+        int row = 0, col = 0, count = 0;
+        Utils.GetRowCol(tile, out row, out col);
+        // LineCount(row, col, 1, ref count);
+        Sweep(tile, 2);
+//        ChainCount(row, col, levelData[tile], false, ref count);
+    }
+    void checkAndAdd(int row, int col)
+    {
+        int id = Utils.GetID(row, col);
+        if (!Utils.IsValidID(id)) return;
+        bool found = false;
+        foreach (int item in FillTileList)
+        {
+            if (item == id)
+                return;
+        }
+        foreach (int item in FillItemList)
+        {
+            if (item == id)
+            {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+        {
+            if (levelData[id] >= 0)
+            {
+                FillItemList.Add(id);
+            }
+            else
+            {
+                FillTileList.Add(id);
+            }
+        }
+        else
+            return;
+
+    }
+
+    void Sweep(int tile, int dir)
+    {
+        int row = 0, col = 0;
+        Utils.GetRowCol(tile, out row, out col);
+        if (dir == 0)
+        {
+            for(int i = 0; i < Utils.height; i++)
+            {
+                int r = 0, c = 0;
+                int id = Utils.GetID(row, col + i);
+                Utils.GetRowCol(id, out r, out c);
+                if (r == row) checkAndAdd(row, col + i);
+                id = Utils.GetID(row, col - i);
+                Utils.GetRowCol(id, out r, out c);
+                if (r == row) checkAndAdd(row, col - i);
+            }
+        }
+        else if (dir == 1)
+        {
+            for (int i = 0; i < Utils.width; i++)
+            {
+                int r = 0, c = 0;
+                int id = Utils.GetID(row + i, col);
+                Utils.GetRowCol(id, out r, out c);
+                if (c == col) checkAndAdd(row + i, col);
+                id = Utils.GetID(row - i, col);
+                Utils.GetRowCol(id, out r, out c);
+                if (c == col) checkAndAdd(row - i, col);
+            }
+
+        }
+        else if (dir == 2)
+        {
+            for (int i = 0; i < Utils.height; i++)
+            {
+                int r = 0, c = 0;
+                int id = Utils.GetID(row, col + i);
+                Utils.GetRowCol(id, out r, out c);
+                if (r == row) checkAndAdd(row, col + i);
+                id = Utils.GetID(row + i, col);
+                Utils.GetRowCol(id, out r, out c);
+                if (c == col) checkAndAdd(row + i, col);
+                id = Utils.GetID(row, col - i);
+                Utils.GetRowCol(id, out r, out c);
+                if (r == row) checkAndAdd(row, col - i);
+                id = Utils.GetID(row - i, col);
+                Utils.GetRowCol(id, out r, out c);
+                if (c == col) checkAndAdd(row - i, col);
+            }
+
+        }
+    }
     public bool IsTargetAchieved()
     {
         return score >= levels.targetScore;

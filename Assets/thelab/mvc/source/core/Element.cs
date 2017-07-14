@@ -147,7 +147,7 @@ namespace thelab.mvc
             while (tks.Count > 0) {
                 string p = tks[0];
                 tks.RemoveAt(0);
-                it = it.FindChild(p);
+                it = it.Find(p);
                 if (it == null) return default(T);
             }
             return it.GetComponent<T>();

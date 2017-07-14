@@ -14,6 +14,10 @@ public class Utils : MonoBehaviour {
     {
         return row * width + col;
     }
+    public static bool IsValidID(int id)
+    {
+        return id >= 0 && id < width * height;
+    }
     public static void GetRowCol(int index, out int row, out int col)
     {
         row = index / width;
