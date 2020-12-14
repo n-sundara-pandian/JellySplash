@@ -1,23 +1,36 @@
 fileFormatVersion: 2
 guid: dce8e804eebd8cd4bb45be086d0a6a11
-timeCreated: 1471407622
-licenseType: Free
 TextureImporter:
-  fileIDToRecycleName:
-    21300000: gems_0
-    21300002: gems_1
-    21300004: gems_2
-    21300006: gems_3
-    21300008: gems_4
-    21300010: gems_5
-  serializedVersion: 2
+  internalIDToNameTable:
+  - first:
+      213: 21300000
+    second: gems_0
+  - first:
+      213: 21300002
+    second: gems_1
+  - first:
+      213: 21300004
+    second: gems_2
+  - first:
+      213: 21300006
+    second: gems_3
+  - first:
+      213: 21300008
+    second: gems_4
+  - first:
+      213: 21300010
+    second: gems_5
+  externalObjects: {}
+  serializedVersion: 10
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
+    sRGBTexture: 1
     linearTexture: 0
-    correctGamma: 0
     fadeOut: 0
     borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
     mipMapFadeDistanceStart: 1
     mipMapFadeDistanceEnd: 3
   bumpmap:
@@ -26,37 +39,60 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
   isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
-  generateCubemap: 0
+  generateCubemap: 6
   cubemapConvolution: 0
-  cubemapConvolutionSteps: 7
-  cubemapConvolutionExponent: 1.5
   seamlessCubemap: 0
   textureFormat: -1
   maxTextureSize: 2048
   textureSettings:
+    serializedVersion: 2
     filterMode: 0
     aniso: 16
-    mipBias: -1
-    wrapMode: 1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
-  rGBM: 0
   compressionQuality: 50
-  allowsAlphaSplitting: 0
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 334
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
   alphaIsTransparency: 1
+  spriteTessellationDetail: -1
   textureType: 8
-  buildTargetSettings: []
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
+    serializedVersion: 2
     sprites:
-    - name: gems_0
+    - serializedVersion: 2
+      name: gems_0
       rect:
         serializedVersion: 2
         x: 0
@@ -66,13 +102,18 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -1, y: -2}
-        - {x: 2, y: -1}
-        - {x: 2, y: 2}
-        - {x: -1, y: 3}
-        - {x: -3, y: 1}
-    - name: gems_1
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02305410000000000800000000000000
+      internalID: 21300000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gems_1
       rect:
         serializedVersion: 2
         x: 344
@@ -82,26 +123,18 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 172, y: 107}
-        - {x: 129, y: 150}
-        - {x: 128, y: 150}
-        - {x: 107, y: 172}
-        - {x: -106, y: 172}
-        - {x: -122, y: 156}
-        - {x: -123, y: 156}
-        - {x: -151, y: 128}
-        - {x: -151, y: 127}
-        - {x: -172, y: 106}
-        - {x: -172, y: -108}
-        - {x: -140, y: -140}
-        - {x: -139, y: -140}
-        - {x: -110, y: -169}
-        - {x: -106, y: -172}
-        - {x: 105, y: -172}
-        - {x: 108, y: -171}
-        - {x: 172, y: -107}
-    - name: gems_2
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22305410000000000800000000000000
+      internalID: 21300002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gems_2
       rect:
         serializedVersion: 2
         x: 0
@@ -111,26 +144,18 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 88, y: 10}
-        - {x: 64, y: 53}
-        - {x: 9, y: 152}
-        - {x: 3, y: 157}
-        - {x: -2, y: 157}
-        - {x: -7, y: 153}
-        - {x: -18, y: 134}
-        - {x: -50, y: 77}
-        - {x: -100, y: -12}
-        - {x: -138, y: -80}
-        - {x: -165, y: -128}
-        - {x: -172, y: -141}
-        - {x: -172, y: -154}
-        - {x: -168, y: -157}
-        - {x: 168, y: -157}
-        - {x: 172, y: -154}
-        - {x: 172, y: -141}
-        - {x: 158, y: -116}
-    - name: gems_3
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 42305410000000000800000000000000
+      internalID: 21300004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gems_3
       rect:
         serializedVersion: 2
         x: 344
@@ -140,23 +165,18 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 167, y: 70}
-        - {x: 147, y: 91}
-        - {x: 100, y: 138}
-        - {x: 100, y: 139}
-        - {x: 72, y: 167}
-        - {x: -68, y: 167}
-        - {x: -165, y: 70}
-        - {x: -165, y: -69}
-        - {x: -106, y: -128}
-        - {x: -105, y: -128}
-        - {x: -68, y: -165}
-        - {x: 72, y: -165}
-        - {x: 123, y: -114}
-        - {x: 123, y: -113}
-        - {x: 167, y: -69}
-    - name: gems_4
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62305410000000000800000000000000
+      internalID: 21300006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gems_4
       rect:
         serializedVersion: 2
         x: 0
@@ -166,12 +186,18 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: -172, y: 172}
-        - {x: -172, y: -172}
-        - {x: 172, y: -172}
-        - {x: 172, y: 172}
-    - name: gems_5
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82305410000000000800000000000000
+      internalID: 21300008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: gems_5
       rect:
         serializedVersion: 2
         x: 344
@@ -181,44 +207,29 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      outline:
-      - - {x: 121, y: -125}
-        - {x: 135, y: -111}
-        - {x: 152, y: -87}
-        - {x: 166, y: -56}
-        - {x: 170, y: -42}
-        - {x: 172, y: -30}
-        - {x: 172, y: 30}
-        - {x: 169, y: 48}
-        - {x: 160, y: 70}
-        - {x: 150, y: 92}
-        - {x: 133, y: 116}
-        - {x: 98, y: 148}
-        - {x: 67, y: 164}
-        - {x: 37, y: 172}
-        - {x: -43, y: 172}
-        - {x: -85, y: 156}
-        - {x: -108, y: 139}
-        - {x: -138, y: 109}
-        - {x: -154, y: 85}
-        - {x: -163, y: 66}
-        - {x: -170, y: 44}
-        - {x: -172, y: 30}
-        - {x: -172, y: -27}
-        - {x: -169, y: -42}
-        - {x: -164, y: -62}
-        - {x: -148, y: -96}
-        - {x: -121, y: -126}
-        - {x: -102, y: -142}
-        - {x: -75, y: -158}
-        - {x: -58, y: -165}
-        - {x: -29, y: -172}
-        - {x: 28, y: -172}
-        - {x: 58, y: -165}
-        - {x: 75, y: -159}
-        - {x: 102, y: -142}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2305410000000000800000000000000
+      internalID: 21300010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
   spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

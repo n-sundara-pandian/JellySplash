@@ -6,3 +6,7 @@ jellySplash.CSharp.Editor.csproj
 android/
 PC/
 sh.exe.stackdump
+Assembly-CSharp.csproj
+obj
+.vs
+Logs

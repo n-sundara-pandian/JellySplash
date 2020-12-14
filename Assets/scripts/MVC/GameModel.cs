@@ -80,7 +80,7 @@ public class GameModel : Model<Game> {
         score = 0;
         highscore = high;
         longstreak = streak;
-        int cur_level = Random.Range(0, 4);
+        int cur_level = 0;// Random.Range(0, 4);
 		string current_level = "Levels/Level_" + cur_level;
 		TextAsset lvl = Resources.Load<TextAsset>(current_level);
 		levels = JsonUtility.FromJson<LevelData> (lvl.text);

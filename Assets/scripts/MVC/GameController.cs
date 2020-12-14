@@ -218,10 +218,10 @@ public class GameController : Controller<Game> {
     }
     void GotoMenu()
     {
-        SceneManager.LoadScene("menu");
+        SceneManager.LoadScene("menu1");
     }
     void GotoWin()
     {
-        SceneManager.LoadScene("win");
+        SceneManager.LoadScene("menu1");
     }
 }

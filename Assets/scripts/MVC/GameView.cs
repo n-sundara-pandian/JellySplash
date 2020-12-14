@@ -253,6 +253,6 @@ public class GameView : View<Game> {
 	}
     void LoadMenu()
     {
-        SceneManager.LoadScene("menu");
+        SceneManager.LoadScene("menu1");
     }
 }
