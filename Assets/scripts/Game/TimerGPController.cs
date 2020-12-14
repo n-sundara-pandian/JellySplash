@@ -4,21 +4,14 @@ using System.Collections.Generic;
 
 public class TimerGPController : GamePlayController {
 
-	public int LevelTimeInSec;
-	public int ElapsedTime;
-	int RemainingTime;
 	Timer GameTimer;
-    bool bGameOver = false;
 	public override void init (Dictionary<string, int> param)
 	{
-		LevelTimeInSec = param ["timer"];
-		ElapsedTime = 0; 
-		bGameOver = false;
+		int LevelTimeInSec = param ["timer"];
 		GameTimer = Timer.Register (LevelTimeInSec, OnTimeComplete, onUpdate: secondsElapsed =>	
 			{
-				ElapsedTime= (int)secondsElapsed;
 				Notify ("controller.tick");
-				RemainingTime = LevelTimeInSec - ElapsedTime;
+				int RemainingTime = (int)(GameTimer.duration - secondsElapsed);
 				if (RemainingTime == 5) {
 					Notify ("controller.warn");
 				}
@@ -31,8 +24,8 @@ public class TimerGPController : GamePlayController {
         Resume(3.0f);
 	}
 	public override void tick (){ }
-	public override int GetRemainingSteps (){return RemainingTime;}
-	public override int GetTotalMoves() { return LevelTimeInSec;}
+	public override int GetRemainingSteps (){return (int)(GameTimer.duration - GameTimer.GetTimeElapsed());}
+	public override int GetTotalMoves() { return (int)GameTimer.duration;}
 	public override void Pause(float delay) {
         if (delay == 0)
             PauseTimer();
@@ -50,6 +43,8 @@ public class TimerGPController : GamePlayController {
     void PauseTimer() { GameTimer.Pause(); }
     void ResumeTimer() { GameTimer.Resume(); }
 
-	void OnTimeComplete() { bGameOver = true;Notify ("controller.gameover");}
+	void OnTimeComplete() { Notify ("controller.gameover");}
+
+	public override void AddSteps(int n) { GameTimer.AddTime(n); }
 
 }

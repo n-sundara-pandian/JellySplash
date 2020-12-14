@@ -17,5 +17,6 @@ public abstract class GamePlayController : Controller<Game>, IGameCondition {
 	public abstract int GetTotalMoves ();
 	public abstract void Pause(float delay);
 	public abstract void Resume (float delay);
+	public abstract void AddSteps(int n);
 }
 

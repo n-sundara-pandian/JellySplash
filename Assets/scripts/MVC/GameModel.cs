@@ -47,6 +47,10 @@ public class GameModel : Model<Game> {
             Notify("model.highscore", highscore);
         }
     }
+    public void AddSteps(int n)
+    {
+        gamePlayController.AddSteps(n);
+    }
     public int GetScore()
     {
         return score;

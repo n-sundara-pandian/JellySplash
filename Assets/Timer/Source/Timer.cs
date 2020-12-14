@@ -250,6 +250,11 @@ public class Timer
         return this.GetTimeRemaining() / this.duration;
     }
 
+    public void AddTime(float dt)
+    {
+        this.duration += dt;
+        if (this.duration < 0) this.duration = 0;
+    }
     #endregion
 
     #region Private Static Properties/Fields
