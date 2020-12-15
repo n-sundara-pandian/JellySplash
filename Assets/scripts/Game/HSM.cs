@@ -9,6 +9,7 @@ public class HSM : MonoBehaviour {
         Start,
         Init,
         Idle,
+        Matching,
         Valid_match,
         Invalid_Match,
         Remove_Items,
@@ -32,6 +33,12 @@ public class HSM : MonoBehaviour {
         yield return new WaitForSeconds(delayTime);
         TransitionMap[key]();
     }
+    public void CheckAndGo(State nextState, float delay = 0.1f)
+    {
+        if (currentState == nextState) return;
+        Go(nextState, delay);
+    }
+
     public void Go(State nextState, float delay = 0.1f)
     {
         KeyValuePair<State, State> key = new KeyValuePair<State, State>(currentState, nextState);
@@ -43,6 +50,14 @@ public class HSM : MonoBehaviour {
         else
         {
             Debug.Log("Failed To Transit From " + currentState.ToString() +  " to " + nextState.ToString());
+        }
+    }
+
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            currentState = State.Idle;
         }
     }
 

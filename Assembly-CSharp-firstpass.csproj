@@ -279,9 +279,6 @@
     <Reference Include="DOTween50">
       <HintPath>C:/Personal/JellySplash/Assets/Demigiant/DOTween/DOTween50.dll</HintPath>
     </Reference>
-    <Reference Include="zxing.unity">
-      <HintPath>C:/Personal/JellySplash/Assets/Plugins/zxing.unity.dll</HintPath>
-    </Reference>
     <Reference Include="Vectrosity">
       <HintPath>C:/Personal/JellySplash/Assets/Plugins/Vectrosity/Vectrosity.dll</HintPath>
     </Reference>

@@ -116,6 +116,7 @@ public class ChainMatchController : Controller<Game> {
                 // Set the current finger to this one
                 draggingFinger = finger;
                 AddBlock(hit);
+                app.controller.hsm.CheckAndGo(HSM.State.Matching);
             }
         }
     }
@@ -127,18 +128,16 @@ public class ChainMatchController : Controller<Game> {
         {
             return;
         }
-		if (app.controller.hsm.GetCurrentState() != HSM.State.Idle)
+		if (app.controller.hsm.GetCurrentState() != HSM.State.Matching)
 			return;
-            // Unset the current finger
       
         foreach (BlockBehaviour block in chainList)
         {
             block.SelectBlock(false);
         }
 		pointsList3d.Clear ();
-		if (chainList.Count == 1) {
+        if (chainList.Count == 1) {
 			app.controller.hsm.Go(HSM.State.FloodFill);
-
 		}
         else if (chainList.Count >= 3)
             app.controller.hsm.Go(HSM.State.Valid_match);

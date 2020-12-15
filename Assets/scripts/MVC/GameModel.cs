@@ -78,13 +78,13 @@ public class GameModel : Model<Game> {
             Notify("model.streak", longstreak);
         }
     }
+    static int cur = 0;
     public void Init(int high, int streak)
     {
-       // movesRemaining = totalMoves;
         score = 0;
         highscore = high;
         longstreak = streak;
-        int cur_level = 0;// Random.Range(0, 4);
+        int cur_level = cur;// Random.Range(0, 4);
 		string current_level = "Levels/Level_" + cur_level;
 		TextAsset lvl = Resources.Load<TextAsset>(current_level);
 		levels = JsonUtility.FromJson<LevelData> (lvl.text);
@@ -94,6 +94,7 @@ public class GameModel : Model<Game> {
             levelData.Add(-1);
         if (levels.timer != 0) InitGameplayController("timer");
         else if (levels.moves != 0) InitGameplayController("moves");
+        cur = ++cur % 4;
     }
     void InitGameplayController(string type)
     {

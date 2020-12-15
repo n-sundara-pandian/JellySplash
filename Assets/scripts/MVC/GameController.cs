@@ -23,8 +23,9 @@ public class GameController : Controller<Game> {
     {
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Start, HSM.State.Init), ToInitBoard);
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Init, HSM.State.Validate_Board), ToValidateBoard);
-        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.Invalid_Match), ToInvalid);
-        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.Valid_match), ToValidMatch);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.Matching), ToMatching);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Matching, HSM.State.Invalid_Match), ToInvalid);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Matching, HSM.State.Valid_match), ToValidMatch);
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Invalid_Match, HSM.State.Idle), ToIdle);
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Valid_match, HSM.State.Remove_Items), ToRemoveItems);
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Remove_Items, HSM.State.Fill_Items), ToFillItems);
@@ -35,8 +36,9 @@ public class GameController : Controller<Game> {
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.Validate_Board), ToValidateBoard);
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.EndGame), ToEndGame);
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.EndGame, HSM.State.GotoMenu), GotoMenu);
-		hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.FloodFill), ToFloodFill);
-		hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.FloodFill, HSM.State.Valid_match), ToValidMatch);
+		hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Matching, HSM.State.FloodFill), ToFloodFill);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Matching, HSM.State.Idle), ToIdle);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.FloodFill, HSM.State.Valid_match), ToValidMatch);
 		hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.FloodFill, HSM.State.Invalid_Match), ToInvalid);
     }
 
@@ -165,6 +167,11 @@ public class GameController : Controller<Game> {
         app.model.DecMoves();
         app.view.SetValue("move", app.model.GetRemainingMoves());
         hsm.Go(HSM.State.Remove_Items);
+    }
+
+    void ToMatching()
+    {
+        hsm.Go(HSM.State.Matching);
     }
     void ToInvalid()
     {

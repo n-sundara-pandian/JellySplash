@@ -6,16 +6,15 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
 using thelab.mvc;
-
+using TMPro;
 public class GameView : View<Game> {
     public GameObject block;
 	public GameObject tile;
     public GameObject particle;
-    public Text scoreText;
-	public Text curMoveScoreText;
-    public Text movesText;
-    public Image resultImage;
-    public Text resultText;
+    public TextMeshPro score3dText;
+	public TextMeshPro curMoveScore3dText;
+    public TextMeshPro movesText;
+    //public Image resultImage;
 
     private List<BlockBehaviour> blocksData = new List<BlockBehaviour>();
     private Sound bgMusic;
@@ -33,9 +32,11 @@ public class GameView : View<Game> {
 	public Sprite[] GemList;
 	public Sprite[] HighlightList;
 
+    const int hintThresholdScore = 300;
+
     void Start()
     {
-        resultImage.transform.DOMoveX(2000, 0.1f);
+        //resultImage.transform.DOMoveX(2000, 0.1f);
     }
     public void InitBoardGfx(List<int> levelData)
     {
@@ -47,17 +48,14 @@ public class GameView : View<Game> {
 		frontTilePool.DeActivatePool();
         particlePool = EZObjectPool.CreateObjectPool(particle.gameObject, "Particles", (Utils.width * Utils.height) / 2, true, true, false);
         particlePool.DeActivatePool();
-        GameObject temp = GameObject.FindGameObjectWithTag("TopLeft");
-        RectTransform TopLeft = temp.GetComponent<RectTransform>();
-        temp = GameObject.FindGameObjectWithTag("BottomRight");
-        RectTransform BottomRight = temp.GetComponent<RectTransform>();
-        temp = GameObject.FindGameObjectWithTag("BackPanel");
+        GameObject TopLeft = GameObject.FindGameObjectWithTag("TopLeft");
+        GameObject BottomRight = GameObject.FindGameObjectWithTag("BottomRight");
         Vector3 StartOffset;
         int min_img_size = 32;
         int max_img_size = 256;
         blocksData.Clear();
-        Vector3 TL = Utils.RectTransformToWorldPoint(TopLeft);
-        Vector3 BR = Utils.RectTransformToWorldPoint(BottomRight);
+        Vector3 TL = TopLeft.transform.localPosition;
+        Vector3 BR = BottomRight.transform.localPosition;
 
         float totalAvailableWidth = Mathf.Abs(TL.x - BR.x);
         float totalAvailableHeight = Mathf.Abs(TL.y - BR.y);
@@ -65,19 +63,16 @@ public class GameView : View<Game> {
         for (int i = min_img_size; i < max_img_size; i++)
         {
             suggested_img_size = i;
-            if (i * Utils.width > totalAvailableWidth || i * Utils.height > totalAvailableHeight)
+            if (i * Utils.width > totalAvailableWidth - suggested_img_size || i * Utils.height > totalAvailableHeight - suggested_img_size)
                 break;
         }
         StartOffset = TL;
         float half_size = suggested_img_size / 4;
-        float start_y = (totalAvailableHeight - suggested_img_size * (Utils.height + 1)) / 2;
+        float start_y = Mathf.Abs ((totalAvailableHeight - suggested_img_size * (Utils.height + 1)) / 2);
+        float start_x = Mathf.Abs((totalAvailableWidth - suggested_img_size * (Utils.width + 1)) / 2);
+        StartOffset.x += start_x;
         StartOffset.y -= start_y;
-        if (temp != null)
-        {
-       //     Debug.Log("Setting Panel Size");
-      //      temp.transform.localScale = new Vector3(suggested_img_size * (Utils.width + 0.5f), suggested_img_size * (Utils.height + 0.5f), 1);
-       //     temp.transform.position = StartOffset + new Vector3(-half_size, half_size, 2);
-        }
+
         GameObject go;
         for (int row = 0; row < Utils.height; row++)
         {
@@ -136,8 +131,7 @@ public class GameView : View<Game> {
             yield return new WaitForSeconds(0.1f);
         if (msgBoxBusy)
             yield return new WaitForSeconds(1.0f);
-        msgBoxBusy = true;
-        resultText.text = msg;
+/*        msgBoxBusy = true;
         Vector3 pos = resultImage.transform.position;
         pos.x = 2000;
         resultImage.transform.position = pos;
@@ -146,7 +140,7 @@ public class GameView : View<Game> {
         yield return new WaitForSeconds(delay);
         resultImage.transform.DOMoveX(-2000, 0.25f);
         yield return new WaitForSeconds(0.25f);
-        msgBoxBusy = false;
+        msgBoxBusy = false;*/
     }
 
     IEnumerator PlayEndGame(int moves, int score)
@@ -223,16 +217,19 @@ public class GameView : View<Game> {
 
     public void SetValue(string key, int val)
     {
-		if (key == "score")
-			scoreText.text = val.ToString ();
-		else if (key == "curscore") {
-			if (val >= 300)
-				curMoveScoreText.text = val.ToString ();
-			else
-				curMoveScoreText.text = "";
-		}
+        if (key == "score")
+        {
+            score3dText.SetText(val.ToString());
+        }
+        else if (key == "curscore")
+        {
+            if (val >= hintThresholdScore)
+                curMoveScore3dText.SetText(val.ToString());
+            else
+                curMoveScore3dText.SetText("");
+        }
         else if (key == "move")
-            movesText.text = val.ToString();
+            movesText.SetText(val.ToString());
     }
     public void WinGame(int moves, int score)
     {
