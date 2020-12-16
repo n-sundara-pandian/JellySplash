@@ -37,7 +37,7 @@ public class GameController : Controller<Game> {
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Idle, HSM.State.EndGame), ToEndGame);
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.EndGame, HSM.State.GotoMenu), GotoMenu);
 		hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Matching, HSM.State.FloodFill), ToFloodFill);
-        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Matching, HSM.State.Idle), ToIdle);
+        hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.Matching, HSM.State.Matching), ToMatching);
         hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.FloodFill, HSM.State.Valid_match), ToValidMatch);
 		hsm.AddTransition(new KeyValuePair<HSM.State, HSM.State>(HSM.State.FloodFill, HSM.State.Invalid_Match), ToInvalid);
     }

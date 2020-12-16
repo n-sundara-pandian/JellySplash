@@ -68,8 +68,8 @@ public class GameView : View<Game> {
         }
         StartOffset = TL;
         float half_size = suggested_img_size / 4;
-        float start_y = Mathf.Abs ((totalAvailableHeight - suggested_img_size * (Utils.height + 1)) / 2);
-        float start_x = Mathf.Abs((totalAvailableWidth - suggested_img_size * (Utils.width + 1)) / 2);
+        float start_y = Mathf.Abs ((totalAvailableHeight - suggested_img_size * (Utils.height)) / 2);
+        float start_x = Mathf.Abs((totalAvailableWidth - suggested_img_size * (Utils.width)) / 2);
         StartOffset.x += start_x;
         StartOffset.y -= start_y;
 
